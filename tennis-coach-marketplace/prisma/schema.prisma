@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  password     String
+  role         String       @default("student")
+  image        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  coach        Coach?
+  bookings     Booking[]
+  reviews      Review[]
+  savedCoaches SavedCoach[]
+}
+
+model Coach {
+  id           String         @id @default(cuid())
+  userId       String         @unique
+  user         User           @relation(fields: [userId], references: [id])
+  bio          String
+  experience   Int            @default(0)
+  location     String
+  hourlyRate   Float
+  specialties  String
+  profileImage String?
+  videoIntro   String?
+  approved     Boolean        @default(false)
+  rating       Float          @default(0)
+  totalReviews Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  bookings     Booking[]
+  reviews      Review[]
+  availability Availability[]
+  savedBy      SavedCoach[]
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  studentId       String
+  coachId         String
+  date            DateTime
+  startTime       String
+  endTime         String
+  status          String   @default("pending")
+  totalPrice      Float
+  notes           String?
+  stripePaymentId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  student User    @relation(fields: [studentId], references: [id])
+  coach   Coach   @relation(fields: [coachId], references: [id])
+  review  Review?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  coachId   String
+  bookingId String   @unique
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  coach   Coach   @relation(fields: [coachId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+model Availability {
+  id          String  @id @default(cuid())
+  coachId     String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isRecurring Boolean @default(true)
+
+  coach Coach @relation(fields: [coachId], references: [id])
+}
+
+model SavedCoach {
+  id        String   @id @default(cuid())
+  userId    String
+  coachId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  coach Coach @relation(fields: [coachId], references: [id])
+
+  @@unique([userId, coachId])
+}
