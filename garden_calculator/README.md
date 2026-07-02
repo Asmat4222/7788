@@ -1,4 +1,4 @@
-# 🌱 GrowVault — Grow a Garden Calculator Suite
+# GrowVault — Grow a Garden Calculator Suite
 
 A **premium Flutter Web** calculator suite for the *Grow a Garden* universe.
 GrowVault recreates the full functionality of a Grow a Garden calculator —
@@ -10,7 +10,7 @@ estimator — behind an original, modern, glassmorphic interface.
 
 ---
 
-## ✨ Features
+## Features
 
 | Tool | What it does |
 |------|--------------|
@@ -26,7 +26,7 @@ animated counters, hover effects, empty states and keyboard-friendly inputs.
 
 ---
 
-## 🧮 The value formula
+## The value formula
 
 ```
 Value = Base Value
@@ -47,7 +47,7 @@ and is covered by unit tests in [`test/`](test/).
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 Clean, layered and modular:
 
@@ -86,7 +86,19 @@ lib/
 
 ---
 
-## 🚀 Getting started
+## No-build / WordPress version
+
+Prefer plain HTML you can paste into a website? A fully self-contained,
+dependency-free build of the calculator (crop value + mutation stacker) lives in
+[`web-standalone/growvault.html`](web-standalone/growvault.html) — one file,
+inline CSS/JS, scoped styles, no build step. See
+[`web-standalone/WORDPRESS.md`](web-standalone/WORDPRESS.md) for five ways to
+embed it (Custom HTML block, iframe, shortcode, code plugin, or the full Flutter
+app).
+
+---
+
+## Getting started
 
 ```bash
 # 1. Fetch dependencies
@@ -112,7 +124,7 @@ The production build is emitted to `build/web/` — deploy it to any static host
 
 ---
 
-## 🎨 Design language
+## Design language
 
 - Deep midnight-green backgrounds with a vivid **emerald** primary and warm
   **gold** value accents.
@@ -122,7 +134,7 @@ The production build is emitted to `build/web/` — deploy it to any static host
 
 ---
 
-## 📊 Data
+## Data
 
 Crop and mutation data mirror community-documented Grow a Garden values,
 curated in [`lib/data/datasources/`](lib/data/datasources/) so numbers can be
@@ -132,7 +144,7 @@ prefers a data-driven / remote pipeline.
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 GrowVault is an **unofficial, fan-made** tool. It is not affiliated with,
 endorsed by, or connected to the creators of *Grow a Garden* or Roblox
