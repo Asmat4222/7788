@@ -1,12 +1,17 @@
 # Putting GrowVault on WordPress
 
-You have two very different code bases in this project. Pick the path that
-matches what you want to embed.
+Pick the file that matches what you want to embed.
 
 | What you want | Use | Effort |
 |---------------|-----|--------|
-| A calculator **inside a WordPress page** | `growvault.html` (this folder) | Minutes |
+| The **complete toolkit** (11 tools: crop value, mutations, pets, trade, restock timers, weather, recipes, eggs, value lists, guide) | `growvault-full.html` / paste-ready `growvault-full-widget.html` | Minutes |
+| Just the **two calculators** (crop value + mutation stacker), lighter | `growvault.html` / `growvault-widget.html` | Minutes |
 | The **full Flutter app** on its own page | `flutter build web` + iframe | Moderate |
+
+The `*-widget.html` files already combine the styles, markup and script into a
+single block, so for a WordPress **Custom HTML** block just open the widget
+file, select all, copy, and paste. That is the fastest path — use
+`growvault-full-widget.html` if you want every tool.
 
 > Important: a Flutter Web app is a compiled JavaScript/WASM bundle. It cannot
 > be "converted" into native WordPress/PHP or a Gutenberg block. You embed it as
