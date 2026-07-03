@@ -1,0 +1,727 @@
+<!-- GrowVault widget - paste this ENTIRE block into a WordPress "Custom HTML" block -->
+<style>
+  /* ---- GrowVault standalone: scoped under #growvault so it is safe to embed ---- */
+  #growvault, #growvault * { box-sizing: border-box; }
+  #growvault {
+    --emerald:#10B981; --emerald-l:#34D399; --emerald-d:#059669;
+    --gold:#F59E0B; --gold-l:#FBBF24; --violet:#8B5CF6; --sky:#38BDF8; --rose:#F43F5E;
+    --bg:#0B1220; --surface:#111C2E; --surface-2:#16233A; --border:#223048;
+    --text:#E2E8F0; --muted:#94A3B8;
+    --radius:18px; --radius-lg:26px;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 560px at 50% -12%, #14493a 0%, rgba(11,18,32,0) 60%),
+      var(--bg);
+    padding: 28px 18px 56px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  #growvault.gv-light {
+    --bg:#F3F7F5; --surface:#FFFFFF; --surface-2:#EAF2EE; --border:#DCE7E1;
+    --text:#0F1B15; --muted:#5B6B62;
+    background: radial-gradient(1100px 560px at 50% -12%, #d6efe3 0%, rgba(243,247,245,0) 60%), var(--bg);
+  }
+  #growvault .gv-wrap { max-width: 1140px; margin: 0 auto; }
+
+  /* Header */
+  #growvault .gv-top { display:flex; align-items:center; gap:14px; margin-bottom:26px; flex-wrap:wrap; }
+  #growvault .gv-logo {
+    width:48px; height:48px; border-radius:14px; display:grid; place-items:center; font-size:24px;
+    background: linear-gradient(135deg, var(--emerald-l), var(--emerald-d));
+    box-shadow: 0 14px 40px rgba(16,185,129,.4);
+  }
+  #growvault .gv-title { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:22px; letter-spacing:-.2px; }
+  #growvault .gv-sub { color:var(--muted); font-size:13px; }
+  #growvault .gv-spacer { flex:1; }
+  #growvault .gv-theme {
+    border:1px solid var(--border); background:var(--surface); color:var(--text);
+    border-radius:12px; padding:9px 14px; cursor:pointer; font-weight:600; font-size:13px;
+  }
+  #growvault .gv-theme:hover { border-color:var(--emerald); }
+
+  /* Tabs */
+  #growvault .gv-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  #growvault .gv-tab {
+    border:1px solid var(--border); background:var(--surface); color:var(--muted);
+    padding:10px 18px; border-radius:999px; cursor:pointer; font-weight:700; font-size:13.5px; transition:.15s;
+  }
+  #growvault .gv-tab.active { color:var(--emerald-l); border-color:var(--emerald); background:rgba(16,185,129,.12); }
+
+  /* Layout */
+  #growvault .gv-grid { display:grid; grid-template-columns: 1.15fr .95fr; gap:22px; align-items:start; }
+  @media (max-width: 900px){ #growvault .gv-grid { grid-template-columns:1fr; } }
+
+  #growvault .gv-card {
+    background: color-mix(in srgb, var(--surface) 78%, transparent);
+    border:1px solid var(--border); border-radius: var(--radius-lg);
+    padding:24px; backdrop-filter: blur(14px);
+  }
+  #growvault .gv-label { font-weight:700; font-size:14.5px; margin:0 0 10px; font-family:'Plus Jakarta Sans',sans-serif; }
+  #growvault .gv-row { display:flex; align-items:center; gap:10px; }
+  #growvault .gv-muted { color:var(--muted); }
+
+  #growvault select, #growvault input[type=number], #growvault input[type=text] {
+    width:100%; background:var(--surface-2); color:var(--text);
+    border:1px solid var(--border); border-radius:12px; padding:13px 14px; font-size:15px; font-weight:600;
+    outline:none;
+  }
+  #growvault select:focus, #growvault input:focus { border-color:var(--emerald); }
+  #growvault input[type=range]{ width:100%; accent-color: var(--emerald); }
+
+  #growvault .gv-field { margin-bottom:22px; }
+  #growvault .gv-linkbtn { background:none;border:none;color:var(--emerald-l);cursor:pointer;font-weight:700;font-size:13px; }
+
+  #growvault .gv-stepper { display:flex; align-items:center; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; }
+  #growvault .gv-stepper button { flex:0 0 46px; height:48px; background:none;border:none;color:var(--emerald-l);font-size:22px;cursor:pointer; }
+  #growvault .gv-stepper input { border:none;background:none;text-align:center;font-size:18px; }
+
+  /* Chips */
+  #growvault .gv-chips { display:flex; flex-wrap:wrap; gap:9px; }
+  #growvault .gv-chip {
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    border:1px solid var(--border); background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+    padding:9px 13px; border-radius:12px; font-weight:700; font-size:13px; transition:.15s;
+  }
+  #growvault .gv-chip .mult { font-size:11px; font-weight:800; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.06); }
+  #growvault .gv-chip.sel { border-width:1.6px; }
+  #growvault .gv-cat { font-size:11px; letter-spacing:1px; font-weight:800; color:var(--muted); margin:14px 0 9px; display:flex; align-items:center; gap:8px; }
+  #growvault .gv-dot { width:8px; height:8px; border-radius:50%; }
+
+  /* Result */
+  #growvault .gv-hero {
+    border-radius:20px; padding:24px; border:1px solid var(--border);
+    background: linear-gradient(135deg, rgba(16,185,129,.20), rgba(245,158,11,.14));
+  }
+  #growvault .gv-hero.cosmic { background: linear-gradient(135deg, var(--violet), var(--sky)); border:none; }
+  #growvault .gv-eyebrow { font-size:12px; letter-spacing:1.4px; font-weight:800; color:var(--muted); }
+  #growvault .gv-hero.cosmic .gv-eyebrow { color:rgba(255,255,255,.8); }
+  #growvault .gv-big { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:44px; line-height:1.05; color:var(--gold-l); word-break:break-word; }
+  #growvault .gv-hero.cosmic .gv-big { color:#fff; font-weight:900; }
+  #growvault .gv-stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+  #growvault .gv-stat { background: color-mix(in srgb, var(--surface-2) 55%, transparent); border:1px solid var(--border); border-radius:16px; padding:14px; }
+  #growvault .gv-stat .k { font-size:11px; letter-spacing:.7px; font-weight:700; color:var(--muted); text-transform:uppercase; }
+  #growvault .gv-stat .v { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:19px; margin-top:5px; }
+  #growvault .gv-formula { margin-top:18px; font-size:12.5px; color:var(--muted); background:color-mix(in srgb,var(--surface-2) 50%,transparent); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  #growvault .gv-foot { text-align:center; color:var(--muted); font-size:12px; margin-top:26px; }
+  #growvault .gv-hidden { display:none !important; }
+</style>
+<!-- ==================== GROWVAULT WIDGET (copy this whole block into WordPress) ==================== -->
+<div id="growvault" class="gv-dark">
+  <div class="gv-wrap">
+    <div class="gv-top">
+      <div class="gv-logo">🌱</div>
+      <div>
+        <div class="gv-title">GrowVault</div>
+        <div class="gv-sub">Grow a Garden Calculator</div>
+      </div>
+      <div class="gv-spacer"></div>
+      <button class="gv-theme" id="gvTheme">🌗 Theme</button>
+    </div>
+
+    <div class="gv-tabs">
+      <button class="gv-tab active" data-tab="calc">🧮 Crop Value</button>
+      <button class="gv-tab" data-tab="mut">✨ Mutation Stacker</button>
+    </div>
+
+    <!-- ===== CROP VALUE ===== -->
+    <div id="gvCalc" class="gv-grid">
+      <div class="gv-card">
+        <div class="gv-field">
+          <p class="gv-label">Crop</p>
+          <select id="gvCrop"></select>
+        </div>
+
+        <div class="gv-field">
+          <div class="gv-row" style="justify-content:space-between">
+            <p class="gv-label" style="margin:0">Weight (kg)</p>
+            <button class="gv-linkbtn" id="gvBaseW">↺ Base weight</button>
+          </div>
+          <input type="number" id="gvWeight" min="0.01" step="0.01" style="margin:10px 0" />
+          <input type="range" id="gvWeightR" min="0.01" step="0.01" />
+        </div>
+
+        <div class="gv-field">
+          <p class="gv-label">Quantity</p>
+          <div class="gv-stepper">
+            <button id="gvQdec">−</button>
+            <input type="number" id="gvQty" value="1" min="1" />
+            <button id="gvQinc">+</button>
+          </div>
+        </div>
+
+        <div class="gv-field">
+          <p class="gv-label">Growth mutation <span class="gv-muted" style="font-weight:500">(one of)</span></p>
+          <div class="gv-chips" id="gvGrowth"></div>
+        </div>
+
+        <div class="gv-field">
+          <div class="gv-row" style="justify-content:space-between">
+            <p class="gv-label" style="margin:0">Environmental mutations</p>
+            <button class="gv-linkbtn" id="gvClearEnv">Clear</button>
+          </div>
+          <div id="gvEnv"></div>
+        </div>
+
+        <div class="gv-field" style="margin-bottom:0">
+          <div class="gv-row" style="justify-content:space-between">
+            <p class="gv-label" style="margin:0">Friend boost</p>
+            <span class="gv-label" style="margin:0;color:var(--emerald-l)" id="gvFbLbl">+0%</span>
+          </div>
+          <input type="range" id="gvFb" min="0" max="100" step="5" value="0" style="margin-top:10px" />
+        </div>
+      </div>
+
+      <div class="gv-card">
+        <div class="gv-hero">
+          <div class="gv-row" style="justify-content:space-between">
+            <span class="gv-eyebrow">TOTAL VALUE</span>
+            <span class="gv-eyebrow" id="gvQtyBadge"></span>
+          </div>
+          <div class="gv-big" id="gvTotal">0</div>
+          <div class="gv-muted" id="gvEach" style="font-size:13px;margin-top:4px"></div>
+        </div>
+        <div class="gv-stats" id="gvBreak"></div>
+        <div class="gv-formula">Value = Base × (Weight ÷ Base Weight)² × Growth × (1 + Σ Env − count) × Friend Boost × Qty</div>
+      </div>
+    </div>
+
+    <!-- ===== MUTATION STACKER ===== -->
+    <div id="gvMut" class="gv-grid gv-hidden">
+      <div class="gv-card">
+        <div class="gv-row" style="justify-content:space-between;margin-bottom:6px">
+          <p class="gv-label" style="margin:0">Choose mutations</p>
+          <button class="gv-linkbtn" id="gvClearMut">Clear</button>
+        </div>
+        <div id="gvMutList"></div>
+      </div>
+      <div class="gv-card">
+        <div class="gv-hero cosmic">
+          <span class="gv-eyebrow">COMBINED MULTIPLIER</span>
+          <div class="gv-big" id="gvMultBig">×1</div>
+          <div style="color:rgba(255,255,255,.85);font-size:13px;margin-top:4px" id="gvMutCount">Select mutations to begin</div>
+        </div>
+        <div class="gv-field" style="margin-top:20px;margin-bottom:12px">
+          <p class="gv-label">Project onto a base value</p>
+          <input type="number" id="gvBase" value="100" min="0" />
+        </div>
+        <div class="gv-stat">
+          <div class="k">Projected value</div>
+          <div class="v" style="color:var(--gold-l)" id="gvProj">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gv-foot">
+      GrowVault · Unofficial fan-made tool. Values are estimates and may change with game updates.
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  // ---------------- Data ----------------
+  var RARITY = {
+    common:['Common','#9CA3AF'], uncommon:['Uncommon','#34D399'], rare:['Rare','#38BDF8'],
+    legendary:['Legendary','#F59E0B'], mythical:['Mythical','#8B5CF6'], divine:['Divine','#F43F5E'],
+    prismatic:['Prismatic','#EC4899'], transcendent:['Transcendent','#22D3EE']
+  };
+  var CROPS = [
+    ['carrot','Carrot',18,0.24,'common','🥕'],['strawberry','Strawberry',14,0.29,'common','🍓'],
+    ['blueberry','Blueberry',18,0.17,'common','🫐'],['rose','Rose',20,0.30,'common','🌹'],
+    ['chamomile','Chamomile',24,0.10,'common','🌼'],
+    ['tomato','Tomato',27,0.44,'uncommon','🍅'],['corn','Corn',36,1.90,'uncommon','🌽'],
+    ['daffodil','Daffodil',903,0.16,'uncommon','🌻'],['orange-tulip','Orange Tulip',767,0.05,'uncommon','🌷'],
+    ['raspberry','Raspberry',90,0.71,'uncommon','🍇'],
+    ['watermelon','Watermelon',2708,7.30,'rare','🍉'],['pumpkin','Pumpkin',3069,6.90,'rare','🎃'],
+    ['apple','Apple',248,2.85,'rare','🍎'],['bamboo','Bamboo',3610,3.80,'rare','🎋'],
+    ['nightshade','Nightshade',934,0.48,'rare','🍆'],
+    ['coconut','Coconut',361,13.31,'legendary','🥥'],['cactus','Cactus',3068,6.65,'legendary','🌵'],
+    ['dragon-fruit','Dragon Fruit',4287,11.38,'legendary','🐲'],['mango','Mango',5866,14.28,'legendary','🥭'],
+    ['pear','Pear',553,2.85,'legendary','🍐'],
+    ['grape','Grape',7085,2.85,'mythical','🍇'],['mushroom','Mushroom',136278,25.90,'mythical','🍄'],
+    ['pepper','Pepper',7220,4.75,'mythical','🌶️'],['cacao','Cacao',10456,7.60,'mythical','🍫'],
+    ['lemon','Lemon',554,0.60,'mythical','🍋'],
+    ['beanstalk','Beanstalk',25270,9.50,'divine','🌱'],['ember-lily','Ember Lily',50138,11.40,'divine','🔥'],
+    ['sugar-apple','Sugar Apple',43320,8.55,'divine','🍏'],['burning-bud','Burning Bud',70000,11.50,'divine','🌺'],
+    ['moon-melon','Moon Melon',16460,7.20,'prismatic','🌙'],['celestiberry','Celestiberry',9100,1.90,'prismatic','✨'],
+    ['soul-fruit','Soul Fruit',3328,23.90,'prismatic','👻'],
+    ['bone-blossom','Bone Blossom',175000,3.00,'transcendent','💀'],['sun-blossom','Sun Blossom',90000,5.20,'transcendent','☀️']
+  ].map(function(c){return {id:c[0],name:c[1],value:c[2],weight:c[3],rarity:c[4],emoji:c[5]};});
+
+  var GROWTH = [
+    {id:'gold',name:'Golden',mult:20,color:'#F59E0B',conf:['rainbow']},
+    {id:'rainbow',name:'Rainbow',mult:50,color:'#8B5CF6',conf:['gold']}
+  ];
+  // cat: temp|env|cosmic|special
+  var ENV = [
+    {id:'wet',name:'Wet',mult:2,cat:'temp',color:'#38BDF8',conf:['chilled','frozen','drenched']},
+    {id:'chilled',name:'Chilled',mult:2,cat:'temp',color:'#60A5FA',conf:['wet','frozen']},
+    {id:'drenched',name:'Drenched',mult:5,cat:'temp',color:'#38BDF8',conf:['wet','frozen']},
+    {id:'frozen',name:'Frozen',mult:10,cat:'temp',color:'#60A5FA',conf:['wet','chilled','drenched']},
+    {id:'heated',name:'Heated',mult:3,cat:'temp',color:'#F43F5E',conf:['frozen','cooked','burnt']},
+    {id:'cooked',name:'Cooked',mult:10,cat:'temp',color:'#F43F5E',conf:['burnt']},
+    {id:'burnt',name:'Burnt',mult:4,cat:'temp',color:'#F43F5E',conf:['cooked']},
+    {id:'molten',name:'Molten',mult:25,cat:'temp',color:'#F43F5E',conf:[]},
+    {id:'chocolate',name:'Chocolate',mult:2,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'pollinated',name:'Pollinated',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'sandy',name:'Sandy',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'clay',name:'Clay',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'honeyglazed',name:'Honey Glazed',mult:5,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'plasma',name:'Plasma',mult:5,cat:'env',color:'#8B5CF6',conf:[]},
+    {id:'twisted',name:'Twisted',mult:5,cat:'env',color:'#34D399',conf:[]},
+    {id:'verdant',name:'Verdant',mult:4,cat:'env',color:'#34D399',conf:[]},
+    {id:'wiltproof',name:'Wiltproof',mult:4,cat:'env',color:'#34D399',conf:[]},
+    {id:'ceramic',name:'Ceramic',mult:30,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'amber',name:'Amber',mult:10,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'radioactive',name:'Radioactive',mult:20,cat:'env',color:'#34D399',conf:[]},
+    {id:'zombified',name:'Zombified',mult:25,cat:'env',color:'#34D399',conf:[]},
+    {id:'moonlit',name:'Moonlit',mult:2,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'bloodlit',name:'Bloodlit',mult:4,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'aurora',name:'Aurora',mult:90,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'shocked',name:'Shocked',mult:100,cat:'cosmic',color:'#F59E0B',conf:[]},
+    {id:'celestial',name:'Celestial',mult:120,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'disco',name:'Disco',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'meteoric',name:'Meteoric',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'voidtouched',name:'Voidtouched',mult:135,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'dawnlit',name:'Dawnlit',mult:4,cat:'special',color:'#F59E0B',conf:[]},
+    {id:'paradisal',name:'Paradisal',mult:100,cat:'special',color:'#34D399',conf:[]},
+    {id:'galactic',name:'Galactic',mult:120,cat:'special',color:'#38BDF8',conf:[]},
+    {id:'sundried',name:'Sundried',mult:85,cat:'special',color:'#F59E0B',conf:[]}
+  ];
+  var CATLABEL = {temp:['Temperature','#60A5FA'],env:['Environmental','#38BDF8'],cosmic:['Cosmic','#8B5CF6'],special:['Special / Event','#F43F5E']};
+  var byId = {}; ENV.concat(GROWTH).forEach(function(m){byId[m.id]=m;});
+
+  // ---------------- Helpers ----------------
+  var $ = function(id){return document.getElementById(id);};
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function compact(n){ var v=Math.abs(n);
+    if(v>=1e12)return (n/1e12).toFixed(2)+'T'; if(v>=1e9)return (n/1e9).toFixed(2)+'B';
+    if(v>=1e6)return (n/1e6).toFixed(2)+'M'; if(v>=1e3)return (n/1e3).toFixed(1)+'K'; return fmt(n); }
+  function xfmt(n){ return '×'+(Number.isInteger(n)?fmt(n):n.toFixed(2)); }
+
+  // ---------------- State ----------------
+  var state = { crop:CROPS[0], weight:CROPS[0].weight, qty:1, growth:null, env:{}, fb:0, followBase:true };
+  var mutState = { sel:{}, base:100 };
+
+  // ---------------- Build crop select ----------------
+  var sel = $('gvCrop');
+  CROPS.forEach(function(c){
+    var o=document.createElement('option'); o.value=c.id;
+    o.textContent = c.emoji+'  '+c.name+' — '+fmt(c.value)+' ('+RARITY[c.rarity][0]+')';
+    sel.appendChild(o);
+  });
+
+  // ---------------- Growth chips ----------------
+  function chip(m, selected){
+    var el=document.createElement('div'); el.className='gv-chip'+(selected?' sel':'');
+    el.style.borderColor = selected? m.color : 'var(--border)';
+    if(selected) el.style.background = m.color+'2e';
+    el.innerHTML = (selected?'✓ ':'')+'<span>'+m.name+'</span><span class="mult" style="color:'+m.color+'">×'+m.mult+'</span>';
+    el.style.color = selected? m.color : 'var(--text)';
+    return el;
+  }
+  function renderGrowth(){
+    var box=$('gvGrowth'); box.innerHTML='';
+    var none=document.createElement('div'); none.className='gv-chip'+(state.growth?'':' sel');
+    none.textContent='None'; if(!state.growth){none.style.borderColor='var(--emerald)';none.style.color='var(--emerald-l)';none.style.background='rgba(16,185,129,.15)';}
+    none.onclick=function(){state.growth=null;renderGrowth();recalc();}; box.appendChild(none);
+    GROWTH.forEach(function(m){
+      var c=chip(m, state.growth&&state.growth.id===m.id);
+      c.onclick=function(){ state.growth=(state.growth&&state.growth.id===m.id)?null:m; renderGrowth(); recalc(); };
+      box.appendChild(c);
+    });
+  }
+
+  // ---------------- Env selector (grouped) ----------------
+  function renderEnv(){
+    var box=$('gvEnv'); box.innerHTML='';
+    Object.keys(CATLABEL).forEach(function(cat){
+      var group=ENV.filter(function(m){return m.cat===cat;}); if(!group.length)return;
+      var h=document.createElement('div'); h.className='gv-cat';
+      h.innerHTML='<span class="gv-dot" style="background:'+CATLABEL[cat][1]+'"></span>'+CATLABEL[cat][0].toUpperCase();
+      box.appendChild(h);
+      var chips=document.createElement('div'); chips.className='gv-chips';
+      group.forEach(function(m){
+        var on=!!state.env[m.id]; var c=chip(m,on);
+        c.onclick=function(){ toggleEnv(m); };
+        chips.appendChild(c);
+      });
+      box.appendChild(chips);
+    });
+  }
+  function toggleEnv(m){
+    if(state.env[m.id]){ delete state.env[m.id]; }
+    else {
+      // drop conflicts
+      Object.keys(state.env).forEach(function(id){
+        var o=byId[id];
+        if(m.conf.indexOf(id)>=0 || (o&&o.conf.indexOf(m.id)>=0)) delete state.env[id];
+      });
+      state.env[m.id]=m;
+    }
+    renderEnv(); recalc();
+  }
+
+  // ---------------- Calculate ----------------
+  function envTerm(list){ if(!list.length)return 1; var s=list.reduce(function(a,m){return a+m.mult;},0); return 1+s-list.length; }
+  function recalc(){
+    var c=state.crop, bw=c.weight<=0?1:c.weight;
+    var ratio=Math.max(state.weight/bw, 0.1);
+    var wmult=ratio*ratio;
+    var gmult=state.growth?state.growth.mult:1;
+    var envList=Object.keys(state.env).map(function(k){return state.env[k];});
+    var eterm=envTerm(envList);
+    var total=gmult*eterm;
+    var fb=1+state.fb/100;
+    var single=c.value*wmult*total*fb;
+    var grand=single*state.qty;
+
+    $('gvTotal').textContent=fmt(grand);
+    $('gvEach').textContent=compact(grand)+' sheckles · '+fmt(single)+' each';
+    $('gvQtyBadge').textContent = state.qty>1 ? '×'+state.qty : '';
+    var st=[
+      ['Base value', fmt(c.value)+' 🪙'],
+      ['Weight factor', xfmt(wmult)],
+      ['Growth', xfmt(gmult)],
+      ['Environmental', xfmt(eterm)],
+      ['Total multiplier', xfmt(total)],
+      ['Friend boost', xfmt(fb)]
+    ];
+    $('gvBreak').innerHTML = st.map(function(s){
+      return '<div class="gv-stat"><div class="k">'+s[0]+'</div><div class="v">'+s[1]+'</div></div>';
+    }).join('');
+  }
+
+  // ---------------- Wire crop calculator ----------------
+  function syncWeightInputs(){ $('gvWeight').value=state.weight.toFixed(2);
+    var mx=Math.max(state.crop.weight*8,1); var r=$('gvWeightR'); r.max=mx.toFixed(2); r.value=Math.min(state.weight,mx); }
+  sel.onchange=function(){ state.crop=CROPS.find(function(c){return c.id===sel.value;});
+    if(state.followBase) state.weight=state.crop.weight; syncWeightInputs(); recalc(); };
+  $('gvWeight').oninput=function(){ var v=parseFloat(this.value); if(v>0){state.weight=v;state.followBase=false;$('gvWeightR').value=Math.min(v,parseFloat($('gvWeightR').max));recalc();} };
+  $('gvWeightR').oninput=function(){ state.weight=parseFloat(this.value);state.followBase=false;$('gvWeight').value=state.weight.toFixed(2);recalc(); };
+  $('gvBaseW').onclick=function(){ state.weight=state.crop.weight;state.followBase=true;syncWeightInputs();recalc(); };
+  $('gvQty').oninput=function(){ state.qty=Math.max(1,parseInt(this.value||'1',10));recalc(); };
+  $('gvQdec').onclick=function(){ state.qty=Math.max(1,state.qty-1);$('gvQty').value=state.qty;recalc(); };
+  $('gvQinc').onclick=function(){ state.qty=state.qty+1;$('gvQty').value=state.qty;recalc(); };
+  $('gvClearEnv').onclick=function(){ state.env={};renderEnv();recalc(); };
+  $('gvFb').oninput=function(){ state.fb=parseFloat(this.value);$('gvFbLbl').textContent='+'+state.fb+'%';recalc(); };
+
+  // ---------------- Mutation stacker ----------------
+  function combined(list){
+    var g=list.filter(function(m){return m.id==='gold'||m.id==='rainbow';});
+    var e=list.filter(function(m){return m.id!=='gold'&&m.id!=='rainbow';});
+    var gm=g.reduce(function(a,m){return a*m.mult;},1);
+    return gm*envTerm(e);
+  }
+  function renderMutList(){
+    var box=$('gvMutList'); box.innerHTML='';
+    var all=[{id:'growth',label:'Growth',color:'#F59E0B',items:GROWTH}]
+      .concat(Object.keys(CATLABEL).map(function(cat){return {id:cat,label:CATLABEL[cat][0],color:CATLABEL[cat][1],items:ENV.filter(function(m){return m.cat===cat;})};}));
+    all.forEach(function(grp){
+      var h=document.createElement('div'); h.className='gv-cat';
+      h.innerHTML='<span class="gv-dot" style="background:'+grp.color+'"></span>'+grp.label.toUpperCase();
+      box.appendChild(h);
+      var chips=document.createElement('div'); chips.className='gv-chips';
+      grp.items.forEach(function(m){
+        var on=!!mutState.sel[m.id]; var c=chip(m,on);
+        c.onclick=function(){ toggleMut(m); };
+        chips.appendChild(c);
+      });
+      box.appendChild(chips);
+    });
+  }
+  function toggleMut(m){
+    if(mutState.sel[m.id]){ delete mutState.sel[m.id]; }
+    else {
+      if(m.id==='gold'||m.id==='rainbow'){ delete mutState.sel['gold']; delete mutState.sel['rainbow']; }
+      Object.keys(mutState.sel).forEach(function(id){
+        var o=byId[id];
+        if((m.conf||[]).indexOf(id)>=0 || (o&&(o.conf||[]).indexOf(m.id)>=0)) delete mutState.sel[id];
+      });
+      mutState.sel[m.id]=m;
+    }
+    renderMutList(); recalcMut();
+  }
+  function recalcMut(){
+    var list=Object.keys(mutState.sel).map(function(k){return mutState.sel[k];});
+    var m=combined(list);
+    $('gvMultBig').textContent = '×'+(m>=100000?compact(m):(Number.isInteger(m)?fmt(m):m.toFixed(2)));
+    $('gvMutCount').textContent = list.length? list.length+' mutation'+(list.length>1?'s':'')+' stacked' : 'Select mutations to begin';
+    $('gvProj').textContent = fmt(mutState.base*m)+' 🪙';
+  }
+  $('gvClearMut').onclick=function(){ mutState.sel={};renderMutList();recalcMut(); };
+  $('gvBase').oninput=function(){ mutState.base=parseFloat(this.value||'0');recalcMut(); };
+
+  // ---------------- Tabs & theme ----------------
+  Array.prototype.forEach.call(document.querySelectorAll('#growvault .gv-tab'), function(t){
+    t.onclick=function(){
+      document.querySelectorAll('#growvault .gv-tab').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      var tab=t.getAttribute('data-tab');
+      $('gvCalc').classList.toggle('gv-hidden', tab!=='calc');
+      $('gvMut').classList.toggle('gv-hidden', tab!=='mut');
+    };
+  });
+  $('gvTheme').onclick=function(){ var g=$('growvault'); g.classList.toggle('gv-light'); g.classList.toggle('gv-dark'); };
+
+  // ---------------- Init ----------------
+  syncWeightInputs(); renderGrowth(); renderEnv(); recalc();
+  renderMutList(); recalcMut();
+})();
+</script>
+<!-- ==================== /GROWVAULT WIDGET ==================== -->
+<script>
+(function () {
+  "use strict";
+  // ---------------- Data ----------------
+  var RARITY = {
+    common:['Common','#9CA3AF'], uncommon:['Uncommon','#34D399'], rare:['Rare','#38BDF8'],
+    legendary:['Legendary','#F59E0B'], mythical:['Mythical','#8B5CF6'], divine:['Divine','#F43F5E'],
+    prismatic:['Prismatic','#EC4899'], transcendent:['Transcendent','#22D3EE']
+  };
+  var CROPS = [
+    ['carrot','Carrot',18,0.24,'common','🥕'],['strawberry','Strawberry',14,0.29,'common','🍓'],
+    ['blueberry','Blueberry',18,0.17,'common','🫐'],['rose','Rose',20,0.30,'common','🌹'],
+    ['chamomile','Chamomile',24,0.10,'common','🌼'],
+    ['tomato','Tomato',27,0.44,'uncommon','🍅'],['corn','Corn',36,1.90,'uncommon','🌽'],
+    ['daffodil','Daffodil',903,0.16,'uncommon','🌻'],['orange-tulip','Orange Tulip',767,0.05,'uncommon','🌷'],
+    ['raspberry','Raspberry',90,0.71,'uncommon','🍇'],
+    ['watermelon','Watermelon',2708,7.30,'rare','🍉'],['pumpkin','Pumpkin',3069,6.90,'rare','🎃'],
+    ['apple','Apple',248,2.85,'rare','🍎'],['bamboo','Bamboo',3610,3.80,'rare','🎋'],
+    ['nightshade','Nightshade',934,0.48,'rare','🍆'],
+    ['coconut','Coconut',361,13.31,'legendary','🥥'],['cactus','Cactus',3068,6.65,'legendary','🌵'],
+    ['dragon-fruit','Dragon Fruit',4287,11.38,'legendary','🐲'],['mango','Mango',5866,14.28,'legendary','🥭'],
+    ['pear','Pear',553,2.85,'legendary','🍐'],
+    ['grape','Grape',7085,2.85,'mythical','🍇'],['mushroom','Mushroom',136278,25.90,'mythical','🍄'],
+    ['pepper','Pepper',7220,4.75,'mythical','🌶️'],['cacao','Cacao',10456,7.60,'mythical','🍫'],
+    ['lemon','Lemon',554,0.60,'mythical','🍋'],
+    ['beanstalk','Beanstalk',25270,9.50,'divine','🌱'],['ember-lily','Ember Lily',50138,11.40,'divine','🔥'],
+    ['sugar-apple','Sugar Apple',43320,8.55,'divine','🍏'],['burning-bud','Burning Bud',70000,11.50,'divine','🌺'],
+    ['moon-melon','Moon Melon',16460,7.20,'prismatic','🌙'],['celestiberry','Celestiberry',9100,1.90,'prismatic','✨'],
+    ['soul-fruit','Soul Fruit',3328,23.90,'prismatic','👻'],
+    ['bone-blossom','Bone Blossom',175000,3.00,'transcendent','💀'],['sun-blossom','Sun Blossom',90000,5.20,'transcendent','☀️']
+  ].map(function(c){return {id:c[0],name:c[1],value:c[2],weight:c[3],rarity:c[4],emoji:c[5]};});
+
+  var GROWTH = [
+    {id:'gold',name:'Golden',mult:20,color:'#F59E0B',conf:['rainbow']},
+    {id:'rainbow',name:'Rainbow',mult:50,color:'#8B5CF6',conf:['gold']}
+  ];
+  // cat: temp|env|cosmic|special
+  var ENV = [
+    {id:'wet',name:'Wet',mult:2,cat:'temp',color:'#38BDF8',conf:['chilled','frozen','drenched']},
+    {id:'chilled',name:'Chilled',mult:2,cat:'temp',color:'#60A5FA',conf:['wet','frozen']},
+    {id:'drenched',name:'Drenched',mult:5,cat:'temp',color:'#38BDF8',conf:['wet','frozen']},
+    {id:'frozen',name:'Frozen',mult:10,cat:'temp',color:'#60A5FA',conf:['wet','chilled','drenched']},
+    {id:'heated',name:'Heated',mult:3,cat:'temp',color:'#F43F5E',conf:['frozen','cooked','burnt']},
+    {id:'cooked',name:'Cooked',mult:10,cat:'temp',color:'#F43F5E',conf:['burnt']},
+    {id:'burnt',name:'Burnt',mult:4,cat:'temp',color:'#F43F5E',conf:['cooked']},
+    {id:'molten',name:'Molten',mult:25,cat:'temp',color:'#F43F5E',conf:[]},
+    {id:'chocolate',name:'Chocolate',mult:2,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'pollinated',name:'Pollinated',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'sandy',name:'Sandy',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'clay',name:'Clay',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'honeyglazed',name:'Honey Glazed',mult:5,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'plasma',name:'Plasma',mult:5,cat:'env',color:'#8B5CF6',conf:[]},
+    {id:'twisted',name:'Twisted',mult:5,cat:'env',color:'#34D399',conf:[]},
+    {id:'verdant',name:'Verdant',mult:4,cat:'env',color:'#34D399',conf:[]},
+    {id:'wiltproof',name:'Wiltproof',mult:4,cat:'env',color:'#34D399',conf:[]},
+    {id:'ceramic',name:'Ceramic',mult:30,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'amber',name:'Amber',mult:10,cat:'env',color:'#F59E0B',conf:[]},
+    {id:'radioactive',name:'Radioactive',mult:20,cat:'env',color:'#34D399',conf:[]},
+    {id:'zombified',name:'Zombified',mult:25,cat:'env',color:'#34D399',conf:[]},
+    {id:'moonlit',name:'Moonlit',mult:2,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'bloodlit',name:'Bloodlit',mult:4,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'aurora',name:'Aurora',mult:90,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'shocked',name:'Shocked',mult:100,cat:'cosmic',color:'#F59E0B',conf:[]},
+    {id:'celestial',name:'Celestial',mult:120,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'disco',name:'Disco',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'meteoric',name:'Meteoric',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},
+    {id:'voidtouched',name:'Voidtouched',mult:135,cat:'cosmic',color:'#8B5CF6',conf:[]},
+    {id:'dawnlit',name:'Dawnlit',mult:4,cat:'special',color:'#F59E0B',conf:[]},
+    {id:'paradisal',name:'Paradisal',mult:100,cat:'special',color:'#34D399',conf:[]},
+    {id:'galactic',name:'Galactic',mult:120,cat:'special',color:'#38BDF8',conf:[]},
+    {id:'sundried',name:'Sundried',mult:85,cat:'special',color:'#F59E0B',conf:[]}
+  ];
+  var CATLABEL = {temp:['Temperature','#60A5FA'],env:['Environmental','#38BDF8'],cosmic:['Cosmic','#8B5CF6'],special:['Special / Event','#F43F5E']};
+  var byId = {}; ENV.concat(GROWTH).forEach(function(m){byId[m.id]=m;});
+
+  // ---------------- Helpers ----------------
+  var $ = function(id){return document.getElementById(id);};
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function compact(n){ var v=Math.abs(n);
+    if(v>=1e12)return (n/1e12).toFixed(2)+'T'; if(v>=1e9)return (n/1e9).toFixed(2)+'B';
+    if(v>=1e6)return (n/1e6).toFixed(2)+'M'; if(v>=1e3)return (n/1e3).toFixed(1)+'K'; return fmt(n); }
+  function xfmt(n){ return '×'+(Number.isInteger(n)?fmt(n):n.toFixed(2)); }
+
+  // ---------------- State ----------------
+  var state = { crop:CROPS[0], weight:CROPS[0].weight, qty:1, growth:null, env:{}, fb:0, followBase:true };
+  var mutState = { sel:{}, base:100 };
+
+  // ---------------- Build crop select ----------------
+  var sel = $('gvCrop');
+  CROPS.forEach(function(c){
+    var o=document.createElement('option'); o.value=c.id;
+    o.textContent = c.emoji+'  '+c.name+' — '+fmt(c.value)+' ('+RARITY[c.rarity][0]+')';
+    sel.appendChild(o);
+  });
+
+  // ---------------- Growth chips ----------------
+  function chip(m, selected){
+    var el=document.createElement('div'); el.className='gv-chip'+(selected?' sel':'');
+    el.style.borderColor = selected? m.color : 'var(--border)';
+    if(selected) el.style.background = m.color+'2e';
+    el.innerHTML = (selected?'✓ ':'')+'<span>'+m.name+'</span><span class="mult" style="color:'+m.color+'">×'+m.mult+'</span>';
+    el.style.color = selected? m.color : 'var(--text)';
+    return el;
+  }
+  function renderGrowth(){
+    var box=$('gvGrowth'); box.innerHTML='';
+    var none=document.createElement('div'); none.className='gv-chip'+(state.growth?'':' sel');
+    none.textContent='None'; if(!state.growth){none.style.borderColor='var(--emerald)';none.style.color='var(--emerald-l)';none.style.background='rgba(16,185,129,.15)';}
+    none.onclick=function(){state.growth=null;renderGrowth();recalc();}; box.appendChild(none);
+    GROWTH.forEach(function(m){
+      var c=chip(m, state.growth&&state.growth.id===m.id);
+      c.onclick=function(){ state.growth=(state.growth&&state.growth.id===m.id)?null:m; renderGrowth(); recalc(); };
+      box.appendChild(c);
+    });
+  }
+
+  // ---------------- Env selector (grouped) ----------------
+  function renderEnv(){
+    var box=$('gvEnv'); box.innerHTML='';
+    Object.keys(CATLABEL).forEach(function(cat){
+      var group=ENV.filter(function(m){return m.cat===cat;}); if(!group.length)return;
+      var h=document.createElement('div'); h.className='gv-cat';
+      h.innerHTML='<span class="gv-dot" style="background:'+CATLABEL[cat][1]+'"></span>'+CATLABEL[cat][0].toUpperCase();
+      box.appendChild(h);
+      var chips=document.createElement('div'); chips.className='gv-chips';
+      group.forEach(function(m){
+        var on=!!state.env[m.id]; var c=chip(m,on);
+        c.onclick=function(){ toggleEnv(m); };
+        chips.appendChild(c);
+      });
+      box.appendChild(chips);
+    });
+  }
+  function toggleEnv(m){
+    if(state.env[m.id]){ delete state.env[m.id]; }
+    else {
+      // drop conflicts
+      Object.keys(state.env).forEach(function(id){
+        var o=byId[id];
+        if(m.conf.indexOf(id)>=0 || (o&&o.conf.indexOf(m.id)>=0)) delete state.env[id];
+      });
+      state.env[m.id]=m;
+    }
+    renderEnv(); recalc();
+  }
+
+  // ---------------- Calculate ----------------
+  function envTerm(list){ if(!list.length)return 1; var s=list.reduce(function(a,m){return a+m.mult;},0); return 1+s-list.length; }
+  function recalc(){
+    var c=state.crop, bw=c.weight<=0?1:c.weight;
+    var ratio=Math.max(state.weight/bw, 0.1);
+    var wmult=ratio*ratio;
+    var gmult=state.growth?state.growth.mult:1;
+    var envList=Object.keys(state.env).map(function(k){return state.env[k];});
+    var eterm=envTerm(envList);
+    var total=gmult*eterm;
+    var fb=1+state.fb/100;
+    var single=c.value*wmult*total*fb;
+    var grand=single*state.qty;
+
+    $('gvTotal').textContent=fmt(grand);
+    $('gvEach').textContent=compact(grand)+' sheckles · '+fmt(single)+' each';
+    $('gvQtyBadge').textContent = state.qty>1 ? '×'+state.qty : '';
+    var st=[
+      ['Base value', fmt(c.value)+' 🪙'],
+      ['Weight factor', xfmt(wmult)],
+      ['Growth', xfmt(gmult)],
+      ['Environmental', xfmt(eterm)],
+      ['Total multiplier', xfmt(total)],
+      ['Friend boost', xfmt(fb)]
+    ];
+    $('gvBreak').innerHTML = st.map(function(s){
+      return '<div class="gv-stat"><div class="k">'+s[0]+'</div><div class="v">'+s[1]+'</div></div>';
+    }).join('');
+  }
+
+  // ---------------- Wire crop calculator ----------------
+  function syncWeightInputs(){ $('gvWeight').value=state.weight.toFixed(2);
+    var mx=Math.max(state.crop.weight*8,1); var r=$('gvWeightR'); r.max=mx.toFixed(2); r.value=Math.min(state.weight,mx); }
+  sel.onchange=function(){ state.crop=CROPS.find(function(c){return c.id===sel.value;});
+    if(state.followBase) state.weight=state.crop.weight; syncWeightInputs(); recalc(); };
+  $('gvWeight').oninput=function(){ var v=parseFloat(this.value); if(v>0){state.weight=v;state.followBase=false;$('gvWeightR').value=Math.min(v,parseFloat($('gvWeightR').max));recalc();} };
+  $('gvWeightR').oninput=function(){ state.weight=parseFloat(this.value);state.followBase=false;$('gvWeight').value=state.weight.toFixed(2);recalc(); };
+  $('gvBaseW').onclick=function(){ state.weight=state.crop.weight;state.followBase=true;syncWeightInputs();recalc(); };
+  $('gvQty').oninput=function(){ state.qty=Math.max(1,parseInt(this.value||'1',10));recalc(); };
+  $('gvQdec').onclick=function(){ state.qty=Math.max(1,state.qty-1);$('gvQty').value=state.qty;recalc(); };
+  $('gvQinc').onclick=function(){ state.qty=state.qty+1;$('gvQty').value=state.qty;recalc(); };
+  $('gvClearEnv').onclick=function(){ state.env={};renderEnv();recalc(); };
+  $('gvFb').oninput=function(){ state.fb=parseFloat(this.value);$('gvFbLbl').textContent='+'+state.fb+'%';recalc(); };
+
+  // ---------------- Mutation stacker ----------------
+  function combined(list){
+    var g=list.filter(function(m){return m.id==='gold'||m.id==='rainbow';});
+    var e=list.filter(function(m){return m.id!=='gold'&&m.id!=='rainbow';});
+    var gm=g.reduce(function(a,m){return a*m.mult;},1);
+    return gm*envTerm(e);
+  }
+  function renderMutList(){
+    var box=$('gvMutList'); box.innerHTML='';
+    var all=[{id:'growth',label:'Growth',color:'#F59E0B',items:GROWTH}]
+      .concat(Object.keys(CATLABEL).map(function(cat){return {id:cat,label:CATLABEL[cat][0],color:CATLABEL[cat][1],items:ENV.filter(function(m){return m.cat===cat;})};}));
+    all.forEach(function(grp){
+      var h=document.createElement('div'); h.className='gv-cat';
+      h.innerHTML='<span class="gv-dot" style="background:'+grp.color+'"></span>'+grp.label.toUpperCase();
+      box.appendChild(h);
+      var chips=document.createElement('div'); chips.className='gv-chips';
+      grp.items.forEach(function(m){
+        var on=!!mutState.sel[m.id]; var c=chip(m,on);
+        c.onclick=function(){ toggleMut(m); };
+        chips.appendChild(c);
+      });
+      box.appendChild(chips);
+    });
+  }
+  function toggleMut(m){
+    if(mutState.sel[m.id]){ delete mutState.sel[m.id]; }
+    else {
+      if(m.id==='gold'||m.id==='rainbow'){ delete mutState.sel['gold']; delete mutState.sel['rainbow']; }
+      Object.keys(mutState.sel).forEach(function(id){
+        var o=byId[id];
+        if((m.conf||[]).indexOf(id)>=0 || (o&&(o.conf||[]).indexOf(m.id)>=0)) delete mutState.sel[id];
+      });
+      mutState.sel[m.id]=m;
+    }
+    renderMutList(); recalcMut();
+  }
+  function recalcMut(){
+    var list=Object.keys(mutState.sel).map(function(k){return mutState.sel[k];});
+    var m=combined(list);
+    $('gvMultBig').textContent = '×'+(m>=100000?compact(m):(Number.isInteger(m)?fmt(m):m.toFixed(2)));
+    $('gvMutCount').textContent = list.length? list.length+' mutation'+(list.length>1?'s':'')+' stacked' : 'Select mutations to begin';
+    $('gvProj').textContent = fmt(mutState.base*m)+' 🪙';
+  }
+  $('gvClearMut').onclick=function(){ mutState.sel={};renderMutList();recalcMut(); };
+  $('gvBase').oninput=function(){ mutState.base=parseFloat(this.value||'0');recalcMut(); };
+
+  // ---------------- Tabs & theme ----------------
+  Array.prototype.forEach.call(document.querySelectorAll('#growvault .gv-tab'), function(t){
+    t.onclick=function(){
+      document.querySelectorAll('#growvault .gv-tab').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      var tab=t.getAttribute('data-tab');
+      $('gvCalc').classList.toggle('gv-hidden', tab!=='calc');
+      $('gvMut').classList.toggle('gv-hidden', tab!=='mut');
+    };
+  });
+  $('gvTheme').onclick=function(){ var g=$('growvault'); g.classList.toggle('gv-light'); g.classList.toggle('gv-dark'); };
+
+  // ---------------- Init ----------------
+  syncWeightInputs(); renderGrowth(); renderEnv(); recalc();
+  renderMutList(); recalcMut();
+})();
+</script>

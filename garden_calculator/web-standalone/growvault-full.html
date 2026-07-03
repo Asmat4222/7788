@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GrowVault — Complete Grow a Garden Toolkit</title>
+<meta name="description" content="Complete Grow a Garden toolkit: crop value, mutations, pets, trades, restock timers, weather, recipes, eggs and value lists. Single-file, WordPress-embeddable." />
+<style>
+  #gv, #gv * { box-sizing:border-box; }
+  #gv {
+    --emerald:#10B981;--emerald-l:#34D399;--emerald-d:#059669;--gold:#F59E0B;--gold-l:#FBBF24;
+    --violet:#8B5CF6;--sky:#38BDF8;--rose:#F43F5E;--blue:#60A5FA;
+    --bg:#0B1220;--surface:#111C2E;--surface-2:#16233A;--border:#223048;--text:#E2E8F0;--muted:#94A3B8;
+    --r:14px;--r-lg:24px;
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--text);
+    background:radial-gradient(1100px 560px at 50% -12%,#14493a 0%,rgba(11,18,32,0) 60%),var(--bg);
+    padding:24px 16px 60px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  #gv.light{--bg:#F3F7F5;--surface:#fff;--surface-2:#EAF2EE;--border:#DCE7E1;--text:#0F1B15;--muted:#5B6B62;
+    background:radial-gradient(1100px 560px at 50% -12%,#d6efe3 0%,rgba(243,247,245,0) 60%),var(--bg);}
+  #gv .wrap{max-width:1160px;margin:0 auto;}
+  #gv h1,#gv h2,#gv h3{font-family:'Plus Jakarta Sans',sans-serif;margin:0;letter-spacing:-.2px;}
+  #gv .top{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+  #gv .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:23px;
+    background:linear-gradient(135deg,var(--emerald-l),var(--emerald-d));box-shadow:0 14px 40px rgba(16,185,129,.4);}
+  #gv .brand b{font-size:21px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;}
+  #gv .brand span{display:block;color:var(--muted);font-size:12.5px;}
+  #gv .sp{flex:1;}
+  #gv .btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:11px;
+    padding:9px 13px;cursor:pointer;font-weight:600;font-size:13px;}
+  #gv .btn:hover{border-color:var(--emerald);}
+
+  /* nav */
+  #gv .nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px;}
+  #gv .nav button{border:1px solid var(--border);background:var(--surface);color:var(--muted);
+    padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:13px;transition:.15s;white-space:nowrap;}
+  #gv .nav button.on{color:var(--emerald-l);border-color:var(--emerald);background:rgba(16,185,129,.12);}
+
+  #gv .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start;}
+  #gv .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  #gv .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:900px){#gv .grid,#gv .grid3,#gv .grid2{grid-template-columns:1fr;}}
+  #gv .card{background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--border);
+    border-radius:var(--r-lg);padding:22px;backdrop-filter:blur(14px);}
+  #gv .card.tap{cursor:pointer;transition:.18s;}
+  #gv .card.tap:hover{transform:translateY(-5px);box-shadow:0 22px 50px rgba(0,0,0,.28);}
+  #gv .lab{font-weight:700;font-size:14px;margin:0 0 9px;font-family:'Plus Jakarta Sans',sans-serif;}
+  #gv .muted{color:var(--muted);}
+  #gv .field{margin-bottom:20px;}
+  #gv .rowb{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  #gv select,#gv input[type=number],#gv input[type=text]{width:100%;background:var(--surface-2);color:var(--text);
+    border:1px solid var(--border);border-radius:11px;padding:12px 13px;font-size:14.5px;font-weight:600;outline:none;}
+  #gv select:focus,#gv input:focus{border-color:var(--emerald);}
+  #gv input[type=range]{width:100%;accent-color:var(--emerald);}
+  #gv .link{background:none;border:none;color:var(--emerald-l);cursor:pointer;font-weight:700;font-size:12.5px;}
+  #gv .step{display:flex;align-items:center;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;}
+  #gv .step button{flex:0 0 44px;height:46px;background:none;border:none;color:var(--emerald-l);font-size:21px;cursor:pointer;}
+  #gv .step input{border:none;background:none;text-align:center;font-size:17px;}
+  #gv .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  #gv .chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid var(--border);
+    background:color-mix(in srgb,var(--surface-2) 60%,transparent);padding:8px 12px;border-radius:11px;font-weight:700;font-size:12.5px;transition:.15s;}
+  #gv .chip .m{font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.07);}
+  #gv .chip.on{border-width:1.6px;}
+  #gv .cat{font-size:10.5px;letter-spacing:1px;font-weight:800;color:var(--muted);margin:13px 0 8px;display:flex;align-items:center;gap:8px;}
+  #gv .dot{width:8px;height:8px;border-radius:50%;}
+  #gv .hero{border-radius:18px;padding:22px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(245,158,11,.14));}
+  #gv .hero.cos{background:linear-gradient(135deg,var(--violet),var(--sky));border:none;}
+  #gv .eyebrow{font-size:11.5px;letter-spacing:1.4px;font-weight:800;color:var(--muted);}
+  #gv .hero.cos .eyebrow{color:rgba(255,255,255,.82);}
+  #gv .big{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:40px;line-height:1.05;color:var(--gold-l);word-break:break-word;}
+  #gv .hero.cos .big{color:#fff;}
+  #gv .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
+  #gv .stat{background:color-mix(in srgb,var(--surface-2) 55%,transparent);border:1px solid var(--border);border-radius:14px;padding:13px;}
+  #gv .stat .k{font-size:10.5px;letter-spacing:.7px;font-weight:700;color:var(--muted);text-transform:uppercase;}
+  #gv .stat .v{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;margin-top:4px;}
+  #gv .formula{margin-top:16px;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--surface-2) 50%,transparent);border:1px solid var(--border);border-radius:11px;padding:12px;}
+  #gv table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  #gv th,#gv td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);}
+  #gv th{color:var(--muted);font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;}
+  #gv td.r,#gv th.r{text-align:right;}
+  #gv .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;border:1px solid;}
+  #gv .timer{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;color:var(--emerald-l);}
+  #gv .subnav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+  #gv .subnav button{border:1px solid var(--border);background:var(--surface-2);color:var(--muted);padding:7px 13px;border-radius:999px;cursor:pointer;font-weight:700;font-size:12.5px;}
+  #gv .subnav button.on{color:var(--emerald-l);border-color:var(--emerald);}
+  #gv .hidden{display:none!important;}
+  #gv .tradecol{min-height:120px;display:flex;flex-direction:column;gap:8px;}
+  #gv .titem{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:8px 10px;font-size:13px;}
+  #gv .titem b{margin-left:auto;color:var(--gold-l);}
+  #gv .titem .x{cursor:pointer;color:var(--rose);font-weight:800;}
+  #gv .verdict{border-radius:16px;padding:18px;text-align:center;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;margin-top:12px;border:1px solid var(--border);}
+  #gv .search{margin-bottom:14px;}
+  #gv .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+  #gv .note{font-size:12px;color:var(--muted);background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);border-radius:11px;padding:11px 13px;margin-bottom:16px;}
+</style>
+</head>
+<body>
+<!-- ============ GROWVAULT FULL TOOLKIT — paste this whole block (plus the styles above and the script below) into WordPress ============ -->
+<div id="gv" class="dark">
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">🌱</div>
+      <div class="brand"><b>GrowVault</b><span>Complete Grow a Garden Toolkit</span></div>
+      <div class="sp"></div>
+      <button class="btn" id="themeBtn">🌗 Theme</button>
+    </div>
+
+    <div class="nav" id="nav"></div>
+
+    <!-- pages injected/rendered here -->
+    <div id="page-dash"></div>
+    <div id="page-calc" class="hidden"></div>
+    <div id="page-mut" class="hidden"></div>
+    <div id="page-pet" class="hidden"></div>
+    <div id="page-trade" class="hidden"></div>
+    <div id="page-stock" class="hidden"></div>
+    <div id="page-weather" class="hidden"></div>
+    <div id="page-recipe" class="hidden"></div>
+    <div id="page-egg" class="hidden"></div>
+    <div id="page-db" class="hidden"></div>
+    <div id="page-guide" class="hidden"></div>
+
+    <div class="foot">GrowVault · Unofficial fan-made toolkit. Values, timers &amp; drop rates are community estimates and can change with game updates.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
+function compact(n){var v=Math.abs(n);if(v>=1e12)return(n/1e12).toFixed(2)+'T';if(v>=1e9)return(n/1e9).toFixed(2)+'B';if(v>=1e6)return(n/1e6).toFixed(2)+'M';if(v>=1e3)return(n/1e3).toFixed(1)+'K';return fmt(n);}
+function xf(n){return '×'+(Number.isInteger(n)?fmt(n):n.toFixed(2));}
+
+/* ============================ DATA ============================ */
+var RAR={common:['Common','#9CA3AF'],uncommon:['Uncommon','#34D399'],rare:['Rare','#38BDF8'],legendary:['Legendary','#F59E0B'],mythical:['Mythical','#8B5CF6'],divine:['Divine','#F43F5E'],prismatic:['Prismatic','#EC4899'],transcendent:['Transcendent','#22D3EE']};
+var CROPS=[
+ ['carrot','Carrot',18,0.24,'common','🥕'],['strawberry','Strawberry',14,0.29,'common','🍓'],['blueberry','Blueberry',18,0.17,'common','🫐'],['rose','Rose',20,0.30,'common','🌹'],['chamomile','Chamomile',24,0.10,'common','🌼'],
+ ['tomato','Tomato',27,0.44,'uncommon','🍅'],['corn','Corn',36,1.90,'uncommon','🌽'],['daffodil','Daffodil',903,0.16,'uncommon','🌻'],['orange-tulip','Orange Tulip',767,0.05,'uncommon','🌷'],['raspberry','Raspberry',90,0.71,'uncommon','🍇'],
+ ['watermelon','Watermelon',2708,7.30,'rare','🍉'],['pumpkin','Pumpkin',3069,6.90,'rare','🎃'],['apple','Apple',248,2.85,'rare','🍎'],['bamboo','Bamboo',3610,3.80,'rare','🎋'],['nightshade','Nightshade',934,0.48,'rare','🍆'],
+ ['coconut','Coconut',361,13.31,'legendary','🥥'],['cactus','Cactus',3068,6.65,'legendary','🌵'],['dragon-fruit','Dragon Fruit',4287,11.38,'legendary','🐲'],['mango','Mango',5866,14.28,'legendary','🥭'],['pear','Pear',553,2.85,'legendary','🍐'],
+ ['grape','Grape',7085,2.85,'mythical','🍇'],['mushroom','Mushroom',136278,25.90,'mythical','🍄'],['pepper','Pepper',7220,4.75,'mythical','🌶️'],['cacao','Cacao',10456,7.60,'mythical','🍫'],['lemon','Lemon',554,0.60,'mythical','🍋'],
+ ['beanstalk','Beanstalk',25270,9.50,'divine','🌱'],['ember-lily','Ember Lily',50138,11.40,'divine','🔥'],['sugar-apple','Sugar Apple',43320,8.55,'divine','🍏'],['burning-bud','Burning Bud',70000,11.50,'divine','🌺'],
+ ['moon-melon','Moon Melon',16460,7.20,'prismatic','🌙'],['celestiberry','Celestiberry',9100,1.90,'prismatic','✨'],['soul-fruit','Soul Fruit',3328,23.90,'prismatic','👻'],
+ ['bone-blossom','Bone Blossom',175000,3.00,'transcendent','💀'],['sun-blossom','Sun Blossom',90000,5.20,'transcendent','☀️']
+].map(function(c){return{id:c[0],name:c[1],value:c[2],weight:c[3],rarity:c[4],emoji:c[5],kind:'crop'};});
+
+var GROWTH=[{id:'gold',name:'Golden',mult:20,color:'#F59E0B',conf:['rainbow']},{id:'rainbow',name:'Rainbow',mult:50,color:'#8B5CF6',conf:['gold']}];
+var ENV=[
+ {id:'wet',name:'Wet',mult:2,cat:'temp',color:'#38BDF8',conf:['chilled','frozen','drenched']},{id:'chilled',name:'Chilled',mult:2,cat:'temp',color:'#60A5FA',conf:['wet','frozen']},
+ {id:'drenched',name:'Drenched',mult:5,cat:'temp',color:'#38BDF8',conf:['wet','frozen']},{id:'frozen',name:'Frozen',mult:10,cat:'temp',color:'#60A5FA',conf:['wet','chilled','drenched']},
+ {id:'heated',name:'Heated',mult:3,cat:'temp',color:'#F43F5E',conf:['frozen','cooked','burnt']},{id:'cooked',name:'Cooked',mult:10,cat:'temp',color:'#F43F5E',conf:['burnt']},
+ {id:'burnt',name:'Burnt',mult:4,cat:'temp',color:'#F43F5E',conf:['cooked']},{id:'molten',name:'Molten',mult:25,cat:'temp',color:'#F43F5E',conf:[]},
+ {id:'chocolate',name:'Chocolate',mult:2,cat:'env',color:'#F59E0B',conf:[]},{id:'pollinated',name:'Pollinated',mult:3,cat:'env',color:'#F59E0B',conf:[]},{id:'sandy',name:'Sandy',mult:3,cat:'env',color:'#F59E0B',conf:[]},
+ {id:'clay',name:'Clay',mult:3,cat:'env',color:'#F59E0B',conf:[]},{id:'honeyglazed',name:'Honey Glazed',mult:5,cat:'env',color:'#F59E0B',conf:[]},{id:'plasma',name:'Plasma',mult:5,cat:'env',color:'#8B5CF6',conf:[]},
+ {id:'twisted',name:'Twisted',mult:5,cat:'env',color:'#34D399',conf:[]},{id:'verdant',name:'Verdant',mult:4,cat:'env',color:'#34D399',conf:[]},{id:'wiltproof',name:'Wiltproof',mult:4,cat:'env',color:'#34D399',conf:[]},
+ {id:'ceramic',name:'Ceramic',mult:30,cat:'env',color:'#F59E0B',conf:[]},{id:'amber',name:'Amber',mult:10,cat:'env',color:'#F59E0B',conf:[]},{id:'radioactive',name:'Radioactive',mult:20,cat:'env',color:'#34D399',conf:[]},
+ {id:'zombified',name:'Zombified',mult:25,cat:'env',color:'#34D399',conf:[]},{id:'moonlit',name:'Moonlit',mult:2,cat:'cosmic',color:'#8B5CF6',conf:[]},{id:'bloodlit',name:'Bloodlit',mult:4,cat:'cosmic',color:'#F43F5E',conf:[]},
+ {id:'aurora',name:'Aurora',mult:90,cat:'cosmic',color:'#8B5CF6',conf:[]},{id:'shocked',name:'Shocked',mult:100,cat:'cosmic',color:'#F59E0B',conf:[]},{id:'celestial',name:'Celestial',mult:120,cat:'cosmic',color:'#8B5CF6',conf:[]},
+ {id:'disco',name:'Disco',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},{id:'meteoric',name:'Meteoric',mult:125,cat:'cosmic',color:'#F43F5E',conf:[]},{id:'voidtouched',name:'Voidtouched',mult:135,cat:'cosmic',color:'#8B5CF6',conf:[]},
+ {id:'dawnlit',name:'Dawnlit',mult:4,cat:'special',color:'#F59E0B',conf:[]},{id:'paradisal',name:'Paradisal',mult:100,cat:'special',color:'#34D399',conf:[]},{id:'galactic',name:'Galactic',mult:120,cat:'special',color:'#38BDF8',conf:[]},{id:'sundried',name:'Sundried',mult:85,cat:'special',color:'#F59E0B',conf:[]}
+];
+var CATL={temp:['Temperature','#60A5FA'],env:['Environmental','#38BDF8'],cosmic:['Cosmic','#8B5CF6'],special:['Special / Event','#F43F5E']};
+var MID={};ENV.concat(GROWTH).forEach(function(m){MID[m.id]=m;});
+
+var PETS=[
+ ['golden-lab','Golden Lab','🐕',12000,'common','Digs up nearby items and sheckles.'],
+ ['cat','Cat','🐈',18000,'uncommon','Occasionally naps and boosts nearby crop value.'],
+ ['rabbit','Rabbit','🐇',45000,'rare','Eats & duplicates carrots/berries.'],
+ ['honey-bee','Honey Bee','🐝',95000,'legendary','Pollinates crops (Pollinated mutation).'],
+ ['red-fox','Red Fox','🦊',180000,'legendary','Steals a duplicate of a harvested crop.'],
+ ['polar-bear','Polar Bear','🐻‍❄️',420000,'mythical','Applies Frozen/Chilled to nearby crops.'],
+ ['dragonfly','Dragonfly','🐉',950000,'divine','Turns a random crop Gold.'],
+ ['raccoon','Raccoon','🦝',1650000,'divine','Steals crops from other gardens.'],
+ ['queen-bee','Queen Bee','👑',2200000,'divine','Strong pollination & bee buffs.'],
+ ['fennec-fox','Fennec Fox','🦊',3200000,'prismatic','Boosts pet XP and duplication.'],
+ ['t-rex','T-Rex','🦖',4800000,'prismatic','Roars to buff all pets nearby.'],
+ ['disco-bee','Disco Bee','🕺',6500000,'transcendent','Applies Disco mutation to crops.']
+].map(function(p){return{id:p[0],name:p[1],emoji:p[2],value:p[3],rarity:p[4],ability:p[5],kind:'pet'};});
+
+var GEAR=[
+ ['watering-can','Watering Can','🚿',50000,'Speeds up growth of watered plants.'],
+ ['trowel','Trowel','🛠️',100000,'Move planted crops without losing them.'],
+ ['recall-wrench','Recall Wrench','🔧',150000,'Teleport back to your garden.'],
+ ['basic-sprinkler','Basic Sprinkler','💧',25000,'Small growth + size boost area.'],
+ ['advanced-sprinkler','Advanced Sprinkler','💦',50000,'Bigger growth/size boost area.'],
+ ['godly-sprinkler','Godly Sprinkler','🌊',120000,'Large boost & mutation chance.'],
+ ['master-sprinkler','Master Sprinkler','🌀',10000000,'Best growth + mutation chances.'],
+ ['lightning-rod','Lightning Rod','⚡',1000000,'Attracts lightning (Shocked mutation).'],
+ ['favorite-tool','Favorite Tool','⭐',20000,'Favorite a crop so it cannot be sold.'],
+ ['harvest-tool','Harvest Tool','🌾',30000,'Harvest a whole row at once.'],
+ ['friendship-pot','Friendship Pot','🪴',15000000,'Share pets/boosts with friends.'],
+ ['cleaning-spray','Cleaning Spray','🧴',15000,'Removes a mutation from a crop.']
+].map(function(g){return{id:g[0],name:g[1],emoji:g[2],value:g[3],effect:g[4],kind:'gear'};});
+
+// eggs: hatch minutes + pet pool [name,%]
+var EGGS=[
+ ['common-egg','Common Egg','🥚',10,50000,[['Golden Lab',33.33],['Dog',33.33],['Bunny',33.33]]],
+ ['uncommon-egg','Uncommon Egg','🥚',20,150000,[['Black Bunny',25],['Chicken',25],['Cat',25],['Deer',25]]],
+ ['rare-egg','Rare Egg','🥚',30,600000,[['Orange Tabby',33.33],['Spotted Deer',25],['Pig',16.67],['Rooster',16.67],['Monkey',8.33]]],
+ ['legendary-egg','Legendary Egg','🥚',60,3000000,[['Cow',42.5],['Silver Monkey',27.5],['Sea Otter',20],['Turtle',7.5],['Polar Bear',2.5]]],
+ ['mythical-egg','Mythical Egg','🥚',120,8000000,[['Grey Mouse',35],['Brown Mouse',26],['Squirrel',24],['Red Giant Ant',7],['Red Fox',8]]],
+ ['bug-egg','Bug Egg','🐛',240,50000000,[['Snail',40],['Giant Ant',30],['Caterpillar',25],['Praying Mantis',4],['Dragonfly',1]]],
+ ['night-egg','Night Egg','🌙',240,50000000,[['Hedgehog',47],['Mole',24],['Frog',22],['Echo Frog',6],['Night Owl',1]]],
+ ['bee-egg','Bee Egg','🐝',240,18000000,[['Bee',65],['Honey Bee',25],['Bear Bee',5],['Petal Bee',4],['Queen Bee',1]]],
+ ['paradise-egg','Paradise Egg','🏝️',300,50000000,[['Ostrich',40],['Peacock',30],['Capybara',25],['Scarlet Macaw',4],['Mimic Octopus',1]]],
+ ['dinosaur-egg','Dinosaur Egg','🦕',420,100000000,[['Raptor',34],['Triceratops',33],['Stegosaurus',28],['Pterodactyl',4],['T-Rex',1]]],
+ ['primal-egg','Primal Egg','🥚',480,120000000,[['Parasaurolophus',40],['Iguanodon',30],['Pachycephalosaurus',20],['Dilophosaurus',9],['Ankylosaurus',1]]]
+].map(function(e){return{id:e[0],name:e[1],emoji:e[2],hatch:e[3],value:e[4],pool:e[5],kind:'egg'};});
+
+// weather -> mutation applied + typical duration (min)
+var WEATHER=[
+ ['Rain','🌧️','wet','Wet','Applies Wet to crops.',20],
+ ['Thunderstorm','⛈️','shocked','Shocked','Chance to apply Shocked (×100).',10],
+ ['Snow','❄️','chilled','Chilled','Applies Chilled; Wet+Chilled = Frozen.',20],
+ ['Frost','🧊','frozen','Frozen','Applies Frozen (×10).',15],
+ ['Heatwave','🔥','heated','Heated','Warms crops (Heated).',15],
+ ['Night','🌙','moonlit','Moonlit','Applies Moonlit (×2).',30],
+ ['Blood Moon','🩸','bloodlit','Bloodlit','Applies Bloodlit (×4).',30],
+ ['Meteor Shower','☄️','meteoric','Meteoric','Chance of Meteoric (×125).',10],
+ ['Disco','🪩','disco','Disco','Disco event (×125).',15],
+ ['Sandstorm','🏜️','sandy','Sandy','Applies Sandy (×3).',15],
+ ['Tornado','🌪️','twisted','Twisted','Applies Twisted (×5).',10],
+ ['Volcano','🌋','molten','Molten','Applies Molten (×25).',10],
+ ['Aurora','🌌','aurora','Aurora','Applies Aurora (×90).',20],
+ ['Black Hole','🕳️','voidtouched','Voidtouched','Rare — Voidtouched (×135).',5]
+];
+
+// cooking recipes: dish + ingredients (guidance)
+var RECIPES=[
+ ['Salad','🥗','Any 3–5 leafy/veg crops (Carrot, Corn, Tomato). More rarity = better.'],
+ ['Sandwich','🥪','Corn + Tomato + a leafy crop. Add rare crops for value.'],
+ ['Pie','🥧','1 fruit (Apple/Blueberry/Watermelon) + filler crops.'],
+ ['Cake','🎂','Sweet fruits (Strawberry, Blueberry) + high-value crop.'],
+ ['Burger','🍔','Corn + Tomato + Pepper. High-tier crops boost tier.'],
+ ['Pizza','🍕','Tomato + Pepper + Corn + Mushroom.'],
+ ['Sushi','🍣','Bamboo + a rare crop + filler.'],
+ ['Donut','🍩','Sweet fruit + Cacao/Chocolate crop.'],
+ ['Soup','🍲','Any 3+ vegetables; mushrooms boost tier.'],
+ ['Ice Cream','🍨','Frozen/Chilled sweet fruits (Strawberry/Blueberry).'],
+ ['Smoothie','🥤','2–3 fruits blended; higher weight = higher tier.'],
+ ['Hot Dog','🌭','Corn + Pepper + a savory crop.']
+];
+
+// restock intervals (minutes)
+var SHOPS=[
+ ['Seed Shop','🌱',5,'Common → Divine seeds rotate every 5 minutes.'],
+ ['Gear Shop','🛠️',5,'Sprinklers, tools & sprays rotate every 5 minutes.'],
+ ['Egg Shop','🥚',30,'Eggs rotate roughly every 30 minutes.'],
+ ['Cosmetics','🎨',240,'Decor & cosmetics rotate every ~4 hours.'],
+ ['Event Shop','🎪',60,'Event/limited items — varies by event (~hourly).']
+];
+
+/* ============================ SHARED CALC ============================ */
+function envTerm(list){if(!list.length)return 1;var s=list.reduce(function(a,m){return a+m.mult;},0);return 1+s-list.length;}
+function cropValue(crop,weight,growth,envList,fb,qty){
+ var bw=crop.weight<=0?1:crop.weight,ratio=Math.max(weight/bw,0.1),w=ratio*ratio;
+ var g=growth?growth.mult:1,e=envTerm(envList),tot=g*e,f=1+(fb||0)/100;
+ var single=crop.value*w*tot*f;return{single:single,total:single*(qty||1),w:w,g:g,e:e,tot:tot,f:f};
+}
+function combined(list){var g=list.filter(function(m){return m.id==='gold'||m.id==='rainbow';});var e=list.filter(function(m){return m.id!=='gold'&&m.id!=='rainbow';});var gm=g.reduce(function(a,m){return a*m.mult;},1);return gm*envTerm(e);}
+
+function chipEl(m,on){var e=el('div','chip'+(on?' on':''));e.style.borderColor=on?m.color:'var(--border)';if(on){e.style.background=m.color+'2e';e.style.color=m.color;}e.innerHTML=(on?'✓ ':'')+'<span>'+m.name+'</span><span class="m" style="color:'+m.color+'">×'+m.mult+'</span>';return e;}
+
+/* ============================ NAV ============================ */
+var TABS=[['dash','🏠 Home'],['calc','🧮 Crop Value'],['mut','✨ Mutations'],['pet','🐾 Pet Value'],['trade','🤝 Trade'],['stock','⏱️ Restock'],['weather','🌦️ Weather'],['recipe','🍳 Recipes'],['egg','🥚 Eggs'],['db','📚 Value Lists'],['guide','📖 Guide']];
+var navBox=$('#nav');
+TABS.forEach(function(t){var b=el('button',null,t[1]);b.onclick=function(){show(t[0]);};b.dataset.t=t[0];navBox.appendChild(b);});
+var built={};
+function show(tab){
+ TABS.forEach(function(t){$('#page-'+t[0]).classList.toggle('hidden',t[0]!==tab);
+   var b=navBox.querySelector('[data-t="'+t[0]+'"]');if(b)b.classList.toggle('on',t[0]===tab);});
+ if(!built[tab]){build[tab]&&build[tab]();built[tab]=true;}
+ if(tab==='stock'||tab==='dash')startClock();
+}
+
+/* ============================ PAGES ============================ */
+var build={};
+
+// ---- Dashboard ----
+build.dash=function(){
+ var p=$('#page-dash');
+ var cards=[['calc','Crop Value','Weight, mutations, quantity & friend boost.','🧮','#10B981'],
+   ['mut','Mutation Stacker','Combine mutations & see the multiplier.','✨','#8B5CF6'],
+   ['pet','Pet Value','Estimate pet worth by age & weight.','🐾','#F59E0B'],
+   ['trade','Trade Calculator','Compare two sides — Win / Fair / Lose.','🤝','#38BDF8'],
+   ['stock','Restock Timers','Live countdowns for every shop.','⏱️','#34D399'],
+   ['weather','Weather & Events','Which event triggers which mutation.','🌦️','#60A5FA'],
+   ['recipe','Recipes','Cooking pot recipes & ingredients.','🍳','#F43F5E'],
+   ['egg','Eggs & Hatching','Hatch times & pet drop rates.','🥚','#EC4899'],
+   ['db','Value Lists','Crops, pets, gear & eggs database.','📚','#22D3EE']];
+ var h=el('div');
+ h.appendChild(el('div','card','<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">'+
+   '<div><h1 style="font-size:30px">Everything for Grow a Garden, in one place.</h1>'+
+   '<p class="muted" style="margin-top:8px;max-width:560px">Crop &amp; pet values, mutation stacking, trade checks, live restock timers, weather effects, recipes, egg odds and full value lists — all in a single fast dashboard.</p></div></div>'));
+ var g=el('div','grid3');g.style.marginTop='16px';
+ cards.forEach(function(c){var card=el('div','card tap');card.onclick=function(){show(c[0]);};
+   card.innerHTML='<div style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:'+c[4]+'26">'+c[3]+'</div>'+
+     '<h3 style="margin-top:14px;font-size:16px">'+c[1]+'</h3><p class="muted" style="font-size:12.5px;margin-top:6px">'+c[2]+'</p>';
+   g.appendChild(card);});
+ h.appendChild(g);
+ // quick strip: next seed restock + a live weather note
+ var strip=el('div','grid2');strip.style.marginTop='16px';
+ strip.innerHTML='<div class="card"><div class="eyebrow">NEXT SEED RESTOCK</div><div class="timer" id="dashSeed">–</div><p class="muted" style="font-size:12px">Seed &amp; gear shops rotate every 5 minutes.</p></div>'+
+   '<div class="card"><div class="eyebrow">NEXT EGG RESTOCK</div><div class="timer" id="dashEgg">–</div><p class="muted" style="font-size:12px">Egg shop rotates about every 30 minutes.</p></div>';
+ h.appendChild(strip);
+ p.appendChild(h);
+};
+
+// ---- Crop Value ----
+build.calc=function(){
+ var p=$('#page-calc');
+ p.innerHTML='<div class="grid">'+
+  '<div class="card">'+
+   '<div class="field"><p class="lab">Crop</p><select id="cCrop"></select></div>'+
+   '<div class="field"><div class="rowb"><p class="lab" style="margin:0">Weight (kg)</p><button class="link" id="cBase">↺ Base</button></div>'+
+     '<input type="number" id="cW" step="0.01" style="margin:9px 0"><input type="range" id="cWR" step="0.01"></div>'+
+   '<div class="field"><p class="lab">Quantity</p><div class="step"><button id="cQd">−</button><input type="number" id="cQ" value="1" min="1"><button id="cQi">+</button></div></div>'+
+   '<div class="field"><p class="lab">Growth mutation</p><div class="chips" id="cG"></div></div>'+
+   '<div class="field"><div class="rowb"><p class="lab" style="margin:0">Environmental mutations</p><button class="link" id="cClr">Clear</button></div><div id="cE"></div></div>'+
+   '<div class="field" style="margin:0"><div class="rowb"><p class="lab" style="margin:0">Friend boost</p><span class="lab" style="margin:0;color:var(--emerald-l)" id="cFbL">+0%</span></div><input type="range" id="cFb" min="0" max="100" step="5" value="0" style="margin-top:9px"></div>'+
+  '</div>'+
+  '<div class="card">'+
+   '<div class="hero"><div class="rowb"><span class="eyebrow">TOTAL VALUE</span><span class="eyebrow" id="cQb"></span></div><div class="big" id="cTot">0</div><div class="muted" id="cEach" style="font-size:12.5px;margin-top:4px"></div></div>'+
+   '<div class="stats" id="cBrk"></div>'+
+   '<div class="formula">Value = Base × (Weight ÷ Base Weight)² × Growth × (1 + Σ Env − count) × Friend Boost × Qty</div>'+
+  '</div></div>';
+ var st={crop:CROPS[0],w:CROPS[0].weight,q:1,g:null,e:{},fb:0,follow:true};
+ var sel=$('#cCrop');CROPS.forEach(function(c){var o=el('option',null,c.emoji+'  '+c.name+' — '+fmt(c.value)+' ('+RAR[c.rarity][0]+')');o.value=c.id;sel.appendChild(o);});
+ function syncW(){$('#cW').value=st.w.toFixed(2);var mx=Math.max(st.crop.weight*8,1);$('#cWR').max=mx.toFixed(2);$('#cWR').value=Math.min(st.w,mx);}
+ function rg(){var b=$('#cG');b.innerHTML='';var none=el('div','chip'+(st.g?'':' on'),'None');if(!st.g){none.style.borderColor='var(--emerald)';none.style.color='var(--emerald-l)';none.style.background='rgba(16,185,129,.15)';}none.onclick=function(){st.g=null;rg();rc();};b.appendChild(none);GROWTH.forEach(function(m){var c=chipEl(m,st.g&&st.g.id===m.id);c.onclick=function(){st.g=(st.g&&st.g.id===m.id)?null:m;rg();rc();};b.appendChild(c);});}
+ function re(){var b=$('#cE');b.innerHTML='';Object.keys(CATL).forEach(function(cat){var grp=ENV.filter(function(m){return m.cat===cat;});var h=el('div','cat','<span class="dot" style="background:'+CATL[cat][1]+'"></span>'+CATL[cat][0].toUpperCase());b.appendChild(h);var ch=el('div','chips');grp.forEach(function(m){var on=!!st.e[m.id];var c=chipEl(m,on);c.onclick=function(){tog(m);};ch.appendChild(c);});b.appendChild(ch);});}
+ function tog(m){if(st.e[m.id])delete st.e[m.id];else{Object.keys(st.e).forEach(function(id){var o=MID[id];if(m.conf.indexOf(id)>=0||(o&&o.conf.indexOf(m.id)>=0))delete st.e[id];});st.e[m.id]=m;}re();rc();}
+ function rc(){var envL=Object.keys(st.e).map(function(k){return st.e[k];});var r=cropValue(st.crop,st.w,st.g,envL,st.fb,st.q);$('#cTot').textContent=fmt(r.total);$('#cEach').textContent=compact(r.total)+' sheckles · '+fmt(r.single)+' each';$('#cQb').textContent=st.q>1?'×'+st.q:'';var s=[['Base value',fmt(st.crop.value)+' 🪙'],['Weight factor',xf(r.w)],['Growth',xf(r.g)],['Environmental',xf(r.e)],['Total multiplier',xf(r.tot)],['Friend boost',xf(r.f)]];$('#cBrk').innerHTML=s.map(function(x){return '<div class="stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>';}).join('');}
+ sel.onchange=function(){st.crop=CROPS.find(function(c){return c.id===sel.value;});if(st.follow)st.w=st.crop.weight;syncW();rc();};
+ $('#cW').oninput=function(){var v=parseFloat(this.value);if(v>0){st.w=v;st.follow=false;$('#cWR').value=Math.min(v,parseFloat($('#cWR').max));rc();}};
+ $('#cWR').oninput=function(){st.w=parseFloat(this.value);st.follow=false;$('#cW').value=st.w.toFixed(2);rc();};
+ $('#cBase').onclick=function(){st.w=st.crop.weight;st.follow=true;syncW();rc();};
+ $('#cQ').oninput=function(){st.q=Math.max(1,parseInt(this.value||'1',10));rc();};
+ $('#cQd').onclick=function(){st.q=Math.max(1,st.q-1);$('#cQ').value=st.q;rc();};
+ $('#cQi').onclick=function(){st.q++;$('#cQ').value=st.q;rc();};
+ $('#cClr').onclick=function(){st.e={};re();rc();};
+ $('#cFb').oninput=function(){st.fb=parseFloat(this.value);$('#cFbL').textContent='+'+st.fb+'%';rc();};
+ syncW();rg();re();rc();
+};
+
+// ---- Mutation Stacker ----
+build.mut=function(){
+ var p=$('#page-mut');
+ p.innerHTML='<div class="grid"><div class="card"><div class="rowb" style="margin-bottom:6px"><p class="lab" style="margin:0">Choose mutations</p><button class="link" id="mClr">Clear</button></div><div id="mList"></div></div>'+
+  '<div class="card"><div class="hero cos"><span class="eyebrow">COMBINED MULTIPLIER</span><div class="big" id="mBig">×1</div><div style="color:rgba(255,255,255,.85);font-size:12.5px;margin-top:4px" id="mCnt">Select mutations to begin</div></div>'+
+  '<div class="field" style="margin-top:18px"><p class="lab">Project onto a base value</p><input type="number" id="mBase" value="100"></div>'+
+  '<div class="stat"><div class="k">Projected value</div><div class="v" style="color:var(--gold-l)" id="mProj">0</div></div></div></div>';
+ var sel={},base=100;
+ function rl(){var b=$('#mList');b.innerHTML='';var groups=[{l:'Growth',c:'#F59E0B',it:GROWTH}].concat(Object.keys(CATL).map(function(cat){return{l:CATL[cat][0],c:CATL[cat][1],it:ENV.filter(function(m){return m.cat===cat;})};}));groups.forEach(function(g){b.appendChild(el('div','cat','<span class="dot" style="background:'+g.c+'"></span>'+g.l.toUpperCase()));var ch=el('div','chips');g.it.forEach(function(m){var c=chipEl(m,!!sel[m.id]);c.onclick=function(){tg(m);};ch.appendChild(c);});b.appendChild(ch);});}
+ function tg(m){if(sel[m.id])delete sel[m.id];else{if(m.id==='gold'||m.id==='rainbow'){delete sel.gold;delete sel.rainbow;}Object.keys(sel).forEach(function(id){var o=MID[id];if((m.conf||[]).indexOf(id)>=0||(o&&(o.conf||[]).indexOf(m.id)>=0))delete sel[id];});sel[m.id]=m;}rl();rc();}
+ function rc(){var list=Object.keys(sel).map(function(k){return sel[k];});var mm=combined(list);$('#mBig').textContent='×'+(mm>=100000?compact(mm):(Number.isInteger(mm)?fmt(mm):mm.toFixed(2)));$('#mCnt').textContent=list.length?list.length+' mutation'+(list.length>1?'s':'')+' stacked':'Select mutations to begin';$('#mProj').textContent=fmt(base*mm)+' 🪙';}
+ $('#mClr').onclick=function(){sel={};rl();rc();};
+ $('#mBase').oninput=function(){base=parseFloat(this.value||'0');rc();};
+ rl();rc();
+};
+
+// ---- Pet Value ----
+build.pet=function(){
+ var p=$('#page-pet');
+ p.innerHTML='<div class="note">Pet values move with trading demand — treat these as estimates. Age adds up to +150%, weight scales from a 5 kg norm.</div>'+
+  '<div class="grid"><div class="card"><p class="lab">Pet</p><div class="chips" id="pList" style="margin-bottom:18px"></div>'+
+  '<div class="field"><div class="rowb"><p class="lab" style="margin:0">Age</p><span class="lab" style="margin:0;color:var(--emerald-l)" id="pAgeL">1 / 100</span></div><input type="range" id="pAge" min="1" max="100" value="1"></div>'+
+  '<div class="field" style="margin:0"><div class="rowb"><p class="lab" style="margin:0">Weight</p><span class="lab" style="margin:0;color:var(--sky)" id="pWL">5.00 kg</span></div><input type="range" id="pW" min="0.5" max="40" step="0.5" value="5"></div></div>'+
+  '<div class="card"><div class="hero"><span class="eyebrow">ESTIMATED VALUE</span><div class="big" id="pVal">0</div><div class="muted" id="pAb" style="font-size:12.5px;margin-top:6px"></div></div>'+
+  '<div class="stats" id="pBrk"></div></div></div>';
+ var st={pet:PETS[0],age:1,w:5};
+ function rlist(){var b=$('#pList');b.innerHTML='';PETS.forEach(function(pt){var on=pt.id===st.pet.id;var c=el('div','chip'+(on?' on':''),pt.emoji+' <span>'+pt.name+'</span>');c.style.borderColor=on?RAR[pt.rarity][1]:'var(--border)';if(on){c.style.background=RAR[pt.rarity][1]+'2e';c.style.color=RAR[pt.rarity][1];}c.onclick=function(){st.pet=pt;rlist();rc();};b.appendChild(c);});}
+ function rc(){var am=1+(st.age/100)*1.5,wm=Math.min(Math.max(st.w/5,0.2),20),v=st.pet.value*am*wm;$('#pVal').textContent=fmt(v);$('#pAb').textContent='Ability: '+st.pet.ability;$('#pBrk').innerHTML=[['Base value',compact(st.pet.value)+' 🪙'],['Age bonus',xf(am)],['Weight',xf(wm)],['Rarity',RAR[st.pet.rarity][0]]].map(function(x){return '<div class="stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>';}).join('');}
+ $('#pAge').oninput=function(){st.age=+this.value;$('#pAgeL').textContent=st.age+' / 100';rc();};
+ $('#pW').oninput=function(){st.w=+this.value;$('#pWL').textContent=st.w.toFixed(2)+' kg';rc();};
+ rlist();rc();
+};
+
+// ---- Trade Calculator ----
+build.trade=function(){
+ var p=$('#page-trade');
+ var CAT=CROPS.concat(PETS).concat(GEAR).concat(EGGS);
+ p.innerHTML='<div class="note">Add items to each side. Crop values use base weight &amp; no mutations (a fair baseline). Verdict compares totals.</div>'+
+  '<div class="grid2">'+
+   sideHTML('A','Your offer')+sideHTML('B','Their offer')+
+  '</div><div id="tVerdict"></div>';
+ function sideHTML(k,title){return '<div class="card"><h3 style="font-size:16px;margin-bottom:12px">'+title+'</h3>'+
+   '<div style="display:flex;gap:8px;margin-bottom:10px"><select id="tSel'+k+'" style="flex:1"></select><div class="step" style="flex:0 0 120px"><button data-k="'+k+'" class="tqd">−</button><input type="number" id="tQ'+k+'" value="1" min="1"><button data-k="'+k+'" class="tqi">+</button></div></div>'+
+   '<button class="btn tadd" data-k="'+k+'" style="width:100%;margin-bottom:12px">+ Add to '+title+'</button>'+
+   '<div class="tradecol" id="tCol'+k+'"></div>'+
+   '<div class="rowb" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px"><span class="lab" style="margin:0">Side total</span><span class="lab" style="margin:0;color:var(--gold-l)" id="tTot'+k+'">0 🪙</span></div></div>';}
+ var sides={A:[],B:[]};
+ ['A','B'].forEach(function(k){var s=$('#tSel'+k);CAT.forEach(function(it){var iv=itemValue(it);var o=el('option',null,(it.emoji||'•')+'  '+it.name+' — '+compact(iv)+' ('+it.kind+')');o.value=it.kind+':'+it.id;s.appendChild(o);});});
+ function itemValue(it){if(it.kind==='crop')return cropValue(it,it.weight,null,[],0,1).single;return it.value;}
+ function find(v){var parts=v.split(':');return CAT.find(function(it){return it.kind===parts[0]&&it.id===parts[1];});}
+ function render(k){var col=$('#tCol'+k);col.innerHTML='';if(!sides[k].length){col.innerHTML='<div class="muted" style="font-size:12.5px;padding:8px">No items yet.</div>';}
+   sides[k].forEach(function(row,i){var iv=itemValue(row.it)*row.q;var t=el('div','titem',(row.it.emoji||'•')+' '+row.it.name+(row.q>1?' ×'+row.q:'')+' <b>'+compact(iv)+' 🪙</b> <span class="x">✕</span>');t.querySelector('.x').onclick=function(){sides[k].splice(i,1);render(k);verdict();};col.appendChild(t);});
+   var tot=sides[k].reduce(function(a,r){return a+itemValue(r.it)*r.q;},0);$('#tTot'+k).textContent=fmt(tot)+' 🪙';}
+ p.querySelectorAll('.tadd').forEach(function(b){b.onclick=function(){var k=b.dataset.k;var it=find($('#tSel'+k).value);var q=Math.max(1,parseInt($('#tQ'+k).value||'1',10));sides[k].push({it:it,q:q});render(k);verdict();};});
+ p.querySelectorAll('.tqd').forEach(function(b){b.onclick=function(){var i=$('#tQ'+b.dataset.k);i.value=Math.max(1,(+i.value||1)-1);};});
+ p.querySelectorAll('.tqi').forEach(function(b){b.onclick=function(){var i=$('#tQ'+b.dataset.k);i.value=(+i.value||1)+1;};});
+ function verdict(){var a=sides.A.reduce(function(s,r){return s+itemValue(r.it)*r.q;},0);var b=sides.B.reduce(function(s,r){return s+itemValue(r.it)*r.q;},0);var box=$('#tVerdict');if(!a&&!b){box.innerHTML='';return;}var diff=b-a;var pct=a>0?Math.round((diff/a)*100):(b>0?100:0);var label,col;var ad=Math.abs(pct);if(ad<=8){label='FAIR TRADE';col='#F59E0B';}else if(diff>0){label='YOU WIN +'+pct+'%';col='#34D399';}else{label='YOU LOSE '+pct+'%';col='#F43F5E';}box.innerHTML='<div class="verdict" style="color:'+col+';border-color:'+col+'55;background:'+col+'14">'+label+'<div class="muted" style="font-size:13px;font-weight:600;margin-top:6px">Your side '+fmt(a)+' 🪙 vs their side '+fmt(b)+' 🪙</div></div>';}
+ render('A');render('B');verdict();
+};
+
+// ---- Restock timers ----
+build.stock=function(){
+ var p=$('#page-stock');
+ p.innerHTML='<div class="note">Countdowns are computed from your device clock using each shop\'s typical rotation. In-game timing can drift slightly.</div><div class="grid3" id="stockGrid"></div>';
+ var g=$('#stockGrid');
+ SHOPS.forEach(function(s){var c=el('div','card');c.innerHTML='<div style="font-size:26px">'+s[1]+'</div><h3 style="margin-top:8px;font-size:16px">'+s[0]+'</h3>'+
+   '<div class="eyebrow" style="margin-top:12px">NEXT RESTOCK IN</div><div class="timer" data-int="'+s[2]+'">–</div><p class="muted" style="font-size:12px;margin-top:8px">'+s[3]+'</p>';g.appendChild(c);});
+ startClock();
+};
+
+// ---- Weather ----
+build.weather=function(){
+ var p=$('#page-weather');
+ var rows=WEATHER.map(function(w){var m=MID[w[2]];var mult=m?'×'+m.mult:'—';return '<tr><td style="font-size:20px">'+w[1]+'</td><td><b>'+w[0]+'</b><div class="muted" style="font-size:12px">'+w[4]+'</div></td><td><span class="pill" style="color:var(--violet);border-color:#8B5CF655">'+w[3]+'</span></td><td class="r"><b style="color:var(--gold-l)">'+mult+'</b></td><td class="r muted">'+w[5]+' min</td></tr>';}).join('');
+ p.innerHTML='<div class="card"><h2 style="font-size:20px;margin-bottom:6px">Weather &amp; Events</h2><p class="muted" style="margin-bottom:14px">Each weather event applies a mutation to crops that are out during it. Time your harvests around high-value events.</p>'+
+  '<div style="overflow-x:auto"><table><thead><tr><th></th><th>Event</th><th>Mutation</th><th class="r">Multiplier</th><th class="r">Duration</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+};
+
+// ---- Recipes ----
+build.recipe=function(){
+ var p=$('#page-recipe');
+ var opts=RECIPES.map(function(r){return '<option value="'+r[0]+'">'+r[1]+'  '+r[0]+'</option>';}).join('');
+ p.innerHTML='<div class="grid"><div class="card"><p class="lab">Choose a dish</p><select id="rSel">'+opts+'</select>'+
+  '<div id="rOut" style="margin-top:18px"></div></div>'+
+  '<div class="card"><h3 style="font-size:16px;margin-bottom:12px">All recipes</h3><div style="overflow-x:auto"><table><thead><tr><th></th><th>Dish</th><th>Ingredients</th></tr></thead><tbody>'+
+  RECIPES.map(function(r){return '<tr><td style="font-size:20px">'+r[1]+'</td><td><b>'+r[0]+'</b></td><td class="muted">'+r[2]+'</td></tr>';}).join('')+'</tbody></table></div></div></div>';
+ function rout(){var r=RECIPES.find(function(x){return x[0]===$('#rSel').value;});$('#rOut').innerHTML='<div class="hero"><div style="font-size:40px">'+r[1]+'</div><h2 style="margin-top:8px">'+r[0]+'</h2><p class="muted" style="margin-top:8px">'+r[2]+'</p><p class="muted" style="margin-top:10px;font-size:12px">Tip: higher-rarity &amp; heavier crops raise the dish tier and its sell value.</p></div>';}
+ $('#rSel').onchange=rout;rout();
+};
+
+// ---- Eggs ----
+build.egg=function(){
+ var p=$('#page-egg');
+ var opts=EGGS.map(function(e){return '<option value="'+e.id+'">'+e.emoji+'  '+e.name+'</option>';}).join('');
+ p.innerHTML='<div class="grid"><div class="card"><p class="lab">Choose an egg</p><select id="eSel">'+opts+'</select><div id="eOut" style="margin-top:18px"></div></div>'+
+  '<div class="card"><h3 style="font-size:16px;margin-bottom:12px">All eggs</h3><div style="overflow-x:auto"><table><thead><tr><th></th><th>Egg</th><th class="r">Hatch</th><th class="r">Cost</th></tr></thead><tbody>'+
+  EGGS.map(function(e){return '<tr><td style="font-size:20px">'+e.emoji+'</td><td><b>'+e.name+'</b></td><td class="r">'+e.hatch+' min</td><td class="r muted">'+compact(e.value)+' 🪙</td></tr>';}).join('')+'</tbody></table></div></div></div>';
+ function eout(){var e=EGGS.find(function(x){return x.id===$('#eSel').value;});var rows=e.pool.slice().sort(function(a,b){return b[1]-a[1];}).map(function(pl){return '<tr><td>'+pl[0]+'</td><td class="r"><b style="color:var(--emerald-l)">'+pl[1]+'%</b></td></tr>';}).join('');
+   $('#eOut').innerHTML='<div class="hero"><div style="font-size:40px">'+e.emoji+'</div><h2 style="margin-top:6px">'+e.name+'</h2><div class="muted" style="margin-top:4px">Hatch time: <b>'+e.hatch+' min</b> · Cost: '+compact(e.value)+' 🪙</div></div>'+
+     '<h3 style="font-size:14px;margin:16px 0 8px">Possible pets</h3><table><tbody>'+rows+'</tbody></table>';}
+ $('#eSel').onchange=eout;eout();
+};
+
+// ---- Value Lists (DB) ----
+build.db=function(){
+ var p=$('#page-db');
+ p.innerHTML='<div class="subnav" id="dbNav"></div><div id="dbBody"></div>';
+ var tabs=[['crops','Crops'],['pets','Pets'],['gear','Gear'],['eggs','Eggs']];
+ var nav=$('#dbNav');var cur='crops';
+ tabs.forEach(function(t){var b=el('button',t[0]===cur?'on':'',t[1]);b.onclick=function(){cur=t[0];nav.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');rbody();};nav.appendChild(b);});
+ function rbody(){var b=$('#dbBody');
+   if(cur==='crops'){b.innerHTML='<div class="card"><input class="search" type="text" id="dbQ" placeholder="Search crops…"><div style="overflow-x:auto"><table><thead><tr><th></th><th>Crop</th><th>Rarity</th><th class="r">Base value</th><th class="r">Base weight</th></tr></thead><tbody id="dbT"></tbody></table></div></div>';
+     var draw=function(q){var list=CROPS.filter(function(c){return c.name.toLowerCase().indexOf((q||'').toLowerCase())>=0;}).sort(function(a,b){return b.value-a.value;});$('#dbT').innerHTML=list.map(function(c){return '<tr><td style="font-size:20px">'+c.emoji+'</td><td><b>'+c.name+'</b></td><td><span class="pill" style="color:'+RAR[c.rarity][1]+';border-color:'+RAR[c.rarity][1]+'66">'+RAR[c.rarity][0]+'</span></td><td class="r"><b style="color:var(--gold-l)">'+fmt(c.value)+'</b></td><td class="r muted">'+c.weight+' kg</td></tr>';}).join('')||'<tr><td colspan="5" class="muted">No crops found.</td></tr>';};
+     $('#dbQ').oninput=function(){draw(this.value);};draw('');}
+   else if(cur==='pets'){b.innerHTML='<div class="card"><div style="overflow-x:auto"><table><thead><tr><th></th><th>Pet</th><th>Rarity</th><th>Ability</th><th class="r">Base value</th></tr></thead><tbody>'+PETS.slice().sort(function(a,b){return b.value-a.value;}).map(function(pt){return '<tr><td style="font-size:20px">'+pt.emoji+'</td><td><b>'+pt.name+'</b></td><td><span class="pill" style="color:'+RAR[pt.rarity][1]+';border-color:'+RAR[pt.rarity][1]+'66">'+RAR[pt.rarity][0]+'</span></td><td class="muted" style="font-size:12px">'+pt.ability+'</td><td class="r"><b style="color:var(--gold-l)">'+compact(pt.value)+'</b></td></tr>';}).join('')+'</tbody></table></div></div>';}
+   else if(cur==='gear'){b.innerHTML='<div class="card"><div style="overflow-x:auto"><table><thead><tr><th></th><th>Gear</th><th>Effect</th><th class="r">Price</th></tr></thead><tbody>'+GEAR.map(function(g){return '<tr><td style="font-size:20px">'+g.emoji+'</td><td><b>'+g.name+'</b></td><td class="muted" style="font-size:12px">'+g.effect+'</td><td class="r"><b style="color:var(--gold-l)">'+compact(g.value)+'</b></td></tr>';}).join('')+'</tbody></table></div></div>';}
+   else{b.innerHTML='<div class="card"><div style="overflow-x:auto"><table><thead><tr><th></th><th>Egg</th><th class="r">Hatch</th><th class="r">Cost</th><th>Top pet</th></tr></thead><tbody>'+EGGS.map(function(e){var top=e.pool.slice().sort(function(a,b){return b[1]-a[1];})[0];return '<tr><td style="font-size:20px">'+e.emoji+'</td><td><b>'+e.name+'</b></td><td class="r">'+e.hatch+' min</td><td class="r muted">'+compact(e.value)+'</td><td class="muted" style="font-size:12px">'+top[0]+' ('+top[1]+'%)</td></tr>';}).join('')+'</tbody></table></div></div>';}
+ }
+ rbody();
+};
+
+// ---- Guide ----
+build.guide=function(){
+ var p=$('#page-guide');
+ p.innerHTML='<div class="card"><h2 style="font-size:20px">How the calculators work</h2>'+
+  '<div class="hero" style="margin-top:14px"><div style="font-family:monospace;font-size:14px;line-height:1.9">'+
+   'Value =<br>&nbsp;&nbsp;<span style="color:var(--sky)">Base × (Weight ÷ Base Weight)²</span><br>&nbsp;&nbsp;<span style="color:var(--violet)">× Growth (Gold ×20 / Rainbow ×50)</span><br>&nbsp;&nbsp;<span style="color:var(--gold-l)">× (1 + Σ Environmental − count)</span><br>&nbsp;&nbsp;<span style="color:var(--emerald-l)">× (1 + Friend Boost ÷ 100) × Qty</span></div></div>'+
+  '<p class="muted" style="margin-top:14px">Weight is squared, so it has the biggest single impact — a crop at 2× base weight is worth ~4× before mutations.</p>'+
+  '<h3 style="margin-top:22px;font-size:16px">Mutation rules</h3><ul class="muted" style="margin-top:8px;padding-left:18px;line-height:1.9">'+
+   '<li><b>Growth mutations</b> (Gold, Rainbow) are exclusive and multiply directly.</li>'+
+   '<li><b>Environmental mutations</b> stack in the (1 + Σ − count) term.</li>'+
+   '<li>Conflicting mutations (Wet / Chilled / Frozen, Cooked / Burnt) can\'t co-exist and auto-swap.</li></ul>'+
+  '<h3 style="margin-top:22px;font-size:16px">FAQ</h3>'+
+   faq('Are these values official?','No — they mirror community data and are curated for consistency. Game updates can shift them.')+
+   faq('How accurate are restock timers?','They use each shop\'s typical rotation from your device clock; in-game timing can drift a little.')+
+   faq('How is a trade judged?','Both sides are summed at baseline values; within ±8% is Fair, otherwise Win/Lose by percentage.')+
+  '</div>';
+ function faq(q,a){return '<div style="border-top:1px solid var(--border);padding:12px 0"><b>'+q+'</b><p class="muted" style="margin-top:5px;font-size:13px">'+a+'</p></div>';}
+};
+
+/* ============================ CLOCK / TIMERS ============================ */
+var clockOn=false;
+function pad(n){return (n<10?'0':'')+n;}
+function nextIn(intMin){var now=Date.now();var period=intMin*60000;var rem=period-(now%period);return rem;}
+function human(ms){var s=Math.floor(ms/1000);var h=Math.floor(s/3600);s-=h*3600;var m=Math.floor(s/60);s-=m*60;return (h>0?h+':':'')+pad(m)+':'+pad(s);}
+function tick(){
+ document.querySelectorAll('#gv [data-int]').forEach(function(node){var i=parseFloat(node.getAttribute('data-int'));node.textContent=human(nextIn(i));});
+ var ds=$('#dashSeed'),de=$('#dashEgg');if(ds)ds.textContent=human(nextIn(5));if(de)de.textContent=human(nextIn(30));
+}
+function startClock(){if(clockOn)return;clockOn=true;tick();setInterval(tick,1000);}
+
+/* ============================ INIT ============================ */
+$('#themeBtn').onclick=function(){var g=$('#gv');g.classList.toggle('light');g.classList.toggle('dark');};
+build.dash();built.dash=true;show('dash');
+})();
+</script>
+<!-- ============ /GROWVAULT FULL TOOLKIT ============ -->
+</body>
+</html>

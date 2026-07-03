@@ -1,0 +1,15 @@
+{
+  "_comment": "Reference export of the crop catalogue. The live data (including emoji tokens) is defined in lib/data/datasources/crop_data.dart.",
+  "crops": [
+    { "id": "carrot", "name": "Carrot", "baseValue": 18, "baseWeight": 0.24, "rarity": "common" },
+    { "id": "strawberry", "name": "Strawberry", "baseValue": 14, "baseWeight": 0.29, "rarity": "common" },
+    { "id": "blueberry", "name": "Blueberry", "baseValue": 18, "baseWeight": 0.17, "rarity": "common" },
+    { "id": "tomato", "name": "Tomato", "baseValue": 27, "baseWeight": 0.44, "rarity": "uncommon" },
+    { "id": "corn", "name": "Corn", "baseValue": 36, "baseWeight": 1.90, "rarity": "uncommon" },
+    { "id": "watermelon", "name": "Watermelon", "baseValue": 2708, "baseWeight": 7.30, "rarity": "rare" },
+    { "id": "dragon-fruit", "name": "Dragon Fruit", "baseValue": 4287, "baseWeight": 11.38, "rarity": "legendary" },
+    { "id": "mushroom", "name": "Mushroom", "baseValue": 136278, "baseWeight": 25.90, "rarity": "mythical" },
+    { "id": "beanstalk", "name": "Beanstalk", "baseValue": 25270, "baseWeight": 9.50, "rarity": "divine" },
+    { "id": "bone-blossom", "name": "Bone Blossom", "baseValue": 175000, "baseWeight": 3.00, "rarity": "transcendent" }
+  ]
+}
